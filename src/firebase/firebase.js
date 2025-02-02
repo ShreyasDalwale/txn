@@ -7,6 +7,8 @@ import {
   addDoc,
   query,
   where,
+  doc,
+  getDoc,serverTimestamp
 } from 'firebase/firestore/lite';
 
 const firebaseConfig = {
@@ -32,19 +34,36 @@ export async function getCities() {
 
 export async function addTxn(txn) {
   try {
+    txn = {...txn,is_deleted:false,created_at:serverTimestamp()}
     const docRef = await addDoc(collection(db, 'transactions'), txn);
     console.log('Document written with ID: ', docRef.id);
+    return docRef
   } catch (e) {
     console.error('Error adding document: ', e);
+    return false
   }
 }
 
-export async function findTxn(uid) {
-  const q = query(collection(db, 'transactions'), where('uid', '==', uid));
+export async function findTxn(uid){
+  const docRef = doc(db,'transactions',uid)
+  const docSnap = await getDoc(docRef);
+  if (docSnap.exists()) {
+    console.log("Document data:", docSnap.data());
+  } else {
+    // docSnap.data() will be undefined in this case
+    console.log("No such document!");
+  }
+
+}
+export async function findAllTxn(uid) {
+  const q = query(collection(db, 'transactions'), 
+  // where('id', '==', uid)
+  );
   const querySnapshot = await getDocs(q);
   console.log(querySnapshot);
   querySnapshot.forEach((doc) => {
     // doc.data() is never undefined for query doc snapshots
     console.log(doc.id, ' => ', doc.data());
   });
+  return querySnapshot;
 }

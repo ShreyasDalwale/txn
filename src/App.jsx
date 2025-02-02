@@ -37,7 +37,7 @@ import TransactionForm from './firebase/TransactionForm';
 const App = () => {
   return (
     <div className="App">
-      <h1>Transaction Tracker</h1>
+      <h1></h1>
       <TransactionForm />
     </div>
   );

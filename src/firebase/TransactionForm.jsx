@@ -9,11 +9,15 @@ const TransactionForm = () => {
     e.preventDefault();
 
     try {
-      await addTxn({
+      let r = await addTxn({
+        // .parse(amount),
         amount,
         category,
         // Add any other transaction details here
       });
+      console.log(r);
+      console.log(await findTxn(r.id));
+
       setAmount(0);
       setCategory('');
       alert('Transaction saved successfully!');
@@ -23,8 +27,8 @@ const TransactionForm = () => {
   };
 
   useEffect(() => {
-    getCities();
-    findTxn(1);
+    // getCities();
+    // findTxn(1);
   }, []);
   return (
     <form onSubmit={handleSubmit}>
