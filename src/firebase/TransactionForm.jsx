@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { addTxn, db, findTxn, getCities } from './firebase'; // Import your Firestore service
+import './m.scss'
 
 const TransactionForm = () => {
-  const [amount, setAmount] = useState(0);
+  const [amount, setAmount] = useState('');
   const [category, setCategory] = useState('');
 
   const handleSubmit = async (e) => {
@@ -31,25 +32,43 @@ const TransactionForm = () => {
     // findTxn(1);
   }, []);
   return (
-    <form onSubmit={handleSubmit}>
-      <label>
-        Amount:
-        <input
-          type="number"
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
-        />
-      </label>
-      <label>
-        Category:
-        <input
-          type="text"
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-        />
-      </label>
-      <button type="submit">Save Transaction</button>
-    </form>
+    <div className='TransactionForm'>
+
+
+      <form onSubmit={handleSubmit}>
+        {/* <label>
+          <input
+            // type="number"
+            placeholder='Amount'
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+          />
+        </label> */}
+        <div className='ti2'>
+          <div class="field">
+            <input
+              type="number"
+              placeholder="Amount"
+              value={category}
+              autofocus
+              onChange={(e) => setCategory(e.target.value)}
+            />
+            <div class="line"></div>
+          </div>
+        </div>
+        {/* <label>
+          <input
+            type="number"
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+          />
+        </label> */}
+        <label>
+          {amount} | {category}
+        </label>
+        <button type="submit">Save</button>
+      </form>
+    </div>
   );
 };
 

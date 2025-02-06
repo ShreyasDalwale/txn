@@ -33,12 +33,15 @@ function AppOld() {
 }
 
 import TransactionForm from './firebase/TransactionForm';
-
+import MasterDetailForm from './firebase/Form1';
+// import Mas from './firebase/Form1'
 const App = () => {
   return (
     <div className="App">
       <h1></h1>
+      {/* <ViewPager /> */}
       <TransactionForm />
+      <MasterDetailForm />
     </div>
   );
 };

@@ -1,0 +1,403 @@
+$primary: #11998e;
+$secondary: #38ef7d;
+$white: #fff;
+$gray: #9b9b9b;
+
+
+
+
+
+.TransactionForm {
+  label {
+    display: block;
+    margin-bottom: 20px;
+  }
+}
+
+
+.ti2 {
+
+  /* Hide number input arrows in all browsers */
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  input[type="number"] {
+    -moz-appearance: textfield;
+    /* For Firefox */
+  }
+
+  margin-bottom: 15px;
+
+  input {
+    background: 0;
+    border: 0;
+    outline: none;
+    width: 80vw;
+    max-width: 400px;
+    font-size: 1.5em;
+    transition: padding 0.3s 0.2s ease;
+    text-align: center;
+
+    &:focus {
+      padding-bottom: 5px;
+
+      ::placeholder {
+        opacity: 0;
+        color: transparent;
+      }
+    }
+
+    // sibling magic ;o
+    &:focus+.line {
+      &:after {
+        transform: scaleX(1);
+      }
+    }
+  }
+
+  .field {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 30px;
+
+    .line {
+      width: 100%;
+      height: 3px;
+      position: absolute;
+      bottom: -8px;
+      border-radius: 55px;
+      // background: #bdc3c7;
+
+      &:after {
+        content: " ";
+        position: absolute;
+        left: 0;
+        float: right;
+        width: 100%;
+        height: 3px;
+
+        transform: scalex(0);
+        transition: transform 0.3s ease;
+
+        // background: #1abc9c;
+        background: linear-gradient(to right, $primary, $secondary);
+      }
+    }
+  }
+
+
+}
+
+
+.ViewPager {
+
+  /* Basic styling for the ViewPager container */
+  // body {
+  //   font-family: Arial, sans-serif;
+  //   display: flex;
+  //   justify-content: center;
+  //   align-items: center;
+  //   height: 100vh;
+  //   margin: 0;
+  //   background-color: #f0f0f0;
+  // }
+
+  .viewpager-container {
+    position: relative;
+    width: 80%;
+    max-width: 600px;
+    overflow: hidden;
+    /* Hides the overflow of slides */
+    border-radius: 10px;
+    background-color: #fff;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+
+  .viewpager {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+    /* Smooth transition for slide movement */
+  }
+
+  .viewpager-slide {
+    min-width: 100%;
+    height: 300px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #ccc;
+    font-size: 24px;
+    color: white;
+  }
+
+  .viewpager-nav {
+    position: absolute;
+    top: 50%;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    transform: translateY(-50%);
+  }
+
+  button {
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    padding: 15px;
+    cursor: pointer;
+    font-size: 20px;
+    border-radius: 50%;
+  }
+
+  button:hover {
+    background-color: rgba(0, 0, 0, 0.7);
+  }
+
+}
+
+
+// .Form1 {
+//   // Dark theme color variables
+//   $primary-color: #3498db; // Blue
+//   $secondary-color: #2ecc71; // Green
+//   $accent-color: #f39c12; // Amber
+//   $background-color: #1e1e1e; // Dark background
+//   $text-color: #f5f5f5; // Light text color
+//   $border-color: #444; // Darker border color
+//   $error-color: #e74c3c; // Red for errors
+//   $input-background: #333; // Input background for dark mode
+//   $focus-color: #2980b9; // Focused border color
+//   $border-radius: 10px;
+//   $input-padding: 12px;
+//   $font-size: 14px;
+//   $transition-duration: 0.3s;
+
+//   // Global Styling
+//   * {
+//     margin: 0;
+//     padding: 0;
+//     box-sizing: border-box;
+//   }
+
+//   body {
+//     font-family: 'Arial', sans-serif;
+//     background-color: $background-color;
+//     color: $text-color;
+//     padding: 20px;
+//   }
+
+//   // Form Container Styling
+//   form {
+//     background-color: #222; // Dark background for form
+//     padding: 30px;
+//     border-radius: $border-radius;
+//     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+//     max-width: 700px;
+//     margin: 0 auto;
+//     transition: all $transition-duration ease;
+//   }
+
+//   // Labels
+//   label {
+//     font-size: $font-size;
+//     margin-bottom: 8px;
+//     display: block;
+//     font-weight: 600;
+//     color: $text-color;
+//     transition: all $transition-duration ease;
+//   }
+
+//   // Input fields styling
+//   input[type="text"],
+//   input[type="email"],
+//   input[type="password"],
+//   input[type="number"],
+//   textarea {
+//     width: 100%;
+//     padding: $input-padding;
+//     font-size: $font-size;
+//     border: 1px solid $border-color;
+//     border-radius: $border-radius;
+//     background-color: $input-background;
+//     color: $text-color;
+//     transition: all $transition-duration ease;
+//     position: relative; // For the pseudo-element that creates the shadow effect
+
+//     &:focus {
+//       outline: none;
+//       border-color: $focus-color;
+//       box-shadow: 0 0 10px rgba(41, 128, 185, 0.4); // Adding basic focus shadow
+//     }
+
+//     // Moving light border shadow effect
+//     &:focus::after {
+//       content: '';
+//       position: absolute;
+//       top: -5px;
+//       left: -5px;
+//       right: -5px;
+//       bottom: -5px;
+//       border-radius: $border-radius;
+//       background: linear-gradient(45deg, rgba(255, 255, 255, 0.2), rgba(0, 255, 255, 0.6), rgba(255, 255, 255, 0.2));
+//       animation: moveShadow 1.5s infinite linear;
+//       z-index: -1;
+//     }
+
+//     &::placeholder {
+//       color: #aaa;
+//     }
+//   }
+
+//   // Keyframes for the moving light shadow
+//   @keyframes moveShadow {
+//     0% {
+//       transform: translate(0, 0);
+//       opacity: 1;
+//     }
+
+//     25% {
+//       transform: translate(5px, 5px);
+//       opacity: 0.7;
+//     }
+
+//     50% {
+//       transform: translate(10px, -5px);
+//       opacity: 1;
+//     }
+
+//     75% {
+//       transform: translate(-5px, 10px);
+//       opacity: 0.7;
+//     }
+
+//     100% {
+//       transform: translate(0, 0);
+//       opacity: 1;
+//     }
+//   }
+
+//   // Buttons
+//   button {
+//     background-color: $primary-color;
+//     color: white;
+//     padding: $input-padding 20px;
+//     font-size: $font-size;
+//     border: none;
+//     border-radius: $border-radius;
+//     cursor: pointer;
+//     transition: background-color $transition-duration ease, transform $transition-duration ease;
+
+//     &:hover {
+//       background-color: darken($primary-color, 10%);
+//       transform: scale(1.05);
+//     }
+
+//     &:active {
+//       background-color: darken($primary-color, 20%);
+//     }
+
+//     &:disabled {
+//       background-color: #666;
+//       cursor: not-allowed;
+//     }
+//   }
+
+//   // Error message styling
+//   span {
+//     color: $error-color;
+//     font-size: 12px;
+//     margin-top: 5px;
+//     display: block;
+//   }
+
+//   // Checkbox & Radio Buttons
+//   input[type="checkbox"],
+//   input[type="radio"] {
+//     width: 18px;
+//     height: 18px;
+//     margin-right: 10px;
+//     border-radius: 4px;
+//     appearance: none;
+//     border: 2px solid $border-color;
+//     background-color: $input-background;
+//     position: relative;
+//     transition: all $transition-duration ease;
+
+//     &:checked {
+//       background-color: $primary-color;
+//       border-color: $primary-color;
+
+//       &::after {
+//         content: '';
+//         position: absolute;
+//         top: 4px;
+//         left: 4px;
+//         width: 8px;
+//         height: 8px;
+//         background-color: white;
+//         border-radius: 50%;
+//       }
+//     }
+
+//     &:focus {
+//       outline: none;
+//       border-color: $focus-color;
+//       box-shadow: 0 0 4px rgba(41, 128, 185, 0.3);
+//     }
+//   }
+
+//   // Select Dropdown
+//   select {
+//     width: 100%;
+//     padding: $input-padding;
+//     font-size: $font-size;
+//     border: 1px solid $border-color;
+//     border-radius: $border-radius;
+//     background-color: $input-background;
+//     color: $text-color;
+//     appearance: none;
+//     background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16"%3E%3Cpath fill="none" d="M4 6l4 4 4-4" /%3E%3C/svg%3E');
+//     background-repeat: no-repeat;
+//     background-position: right 10px center;
+//     background-size: 12px;
+//     transition: all $transition-duration ease;
+
+//     &:focus {
+//       outline: none;
+//       border-color: $focus-color;
+//       box-shadow: 0 0 4px rgba(41, 128, 185, 0.3);
+//     }
+//   }
+
+//   // Spacing between form sections
+//   form>div {
+//     margin-bottom: 20px;
+//   }
+
+//   // Add spacing between dynamic inputs (like multiple addresses)
+//   button[type="button"] {
+//     margin-top: 15px;
+//   }
+
+//   // Focus and active state for buttons
+//   button[type="submit"],
+//   input[type="submit"],
+//   input[type="reset"] {
+//     margin-top: 20px;
+//     transition: background-color $transition-duration ease, transform $transition-duration ease;
+//   }
+
+//   // Focus outline removed for better user experience
+//   input:focus,
+//   textarea:focus,
+//   button:focus {
+//     outline: none;
+//   }
+
+
+// }
