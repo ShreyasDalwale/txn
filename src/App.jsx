@@ -41,7 +41,7 @@ const App = () => {
       <h1></h1>
       {/* <ViewPager /> */}
       <TransactionForm />
-      <MasterDetailForm />
+      {/* <MasterDetailForm /> */}
     </div>
   );
 };

@@ -44,7 +44,7 @@ $gray: #9b9b9b;
     &:focus {
       padding-bottom: 5px;
 
-      ::placeholder {
+      &::placeholder {
         opacity: 0;
         color: transparent;
       }
