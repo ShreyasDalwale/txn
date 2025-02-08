@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { addTxn, db, findTxn, getCities } from './firebase'; // Import your Firestore service
 import './m.scss'
-
+import { Button } from './../components/ui/button'
 const TransactionForm = () => {
   const [amount, setAmount] = useState('');
   const [category, setCategory] = useState('');
@@ -67,6 +67,7 @@ const TransactionForm = () => {
           {amount} | {category}
         </label>
         <button type="submit">Save</button>
+        <Button variant='outline'>HEllo</Button>
       </form>
     </div>
   );
