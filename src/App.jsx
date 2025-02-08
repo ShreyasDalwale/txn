@@ -32,8 +32,8 @@ function AppOld() {
   );
 }
 
-import TransactionForm from './firebase/TransactionForm';
-import MasterDetailForm from './firebase/Form1';
+import TransactionForm from './services/firebase/TransactionForm';
+import MasterDetailForm from '@/services/firebase/Form1';
 // import Mas from './firebase/Form1'
 const App = () => {
   return (
