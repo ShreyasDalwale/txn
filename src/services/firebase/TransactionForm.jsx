@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { addTxn, db, findTxn, getCities } from './firebase'; // Import your Firestore service
 import './m.scss'
+import { MultiSelect } from '@mantine/core';
 
 const TransactionForm = () => {
   const [amount, setAmount] = useState('');
@@ -67,6 +68,11 @@ const TransactionForm = () => {
           {amount} | {category}
         </label>
         <button type="submit">Save</button>
+        <MultiSelect
+          label="Your favorite libraries"
+          placeholder="Pick value"
+          data={['React', 'Angular', 'Vue', 'Svelte']}
+        />
       </form>
     </div>
   );
