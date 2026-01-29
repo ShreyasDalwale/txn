@@ -33,13 +33,29 @@ function AppOld() {
 }
 
 import TransactionForm from './services/firebase/TransactionForm';
-import MasterDetailForm from '@/services/firebase/Form1';
+import { signInWithGoogle ,logout} from '@/services/firebase/auth';
+import { useAuth } from '@/services/firebase/useAuth';
+
 // import Mas from './firebase/Form1'
 const App = () => {
+    const { user, loading } = useAuth();
+    // if (loading) return <p>Loading...</p>;
+
   return (
     <div className="App">
       <h1></h1>
       {/* <ViewPager /> */}
+        {user ? (
+        <>
+          <p>Welcome {user.displayName}</p>
+          <img src={user.photoURL} width={40} />
+          <button onClick={logout}>Logout</button>
+        </>
+      ) : (
+        <button onClick={signInWithGoogle}>
+          Sign in with Google
+        </button>
+      )}
       <TransactionForm />
       {/* <MasterDetailForm /> */}
     </div>

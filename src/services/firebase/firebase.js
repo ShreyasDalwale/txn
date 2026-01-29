@@ -7,9 +7,11 @@ import {
   addDoc,
   query,
   where,
+  limit, orderBy,
   doc,
   getDoc,serverTimestamp
 } from 'firebase/firestore/lite';
+import { getAuth, GoogleAuthProvider } from "firebase/auth";
 
 const firebaseConfig = {
   apiKey: 'AIzaSyC1tB8sJYOLeq3FadH9pJXd4m8cHyxQ_PM',
@@ -21,8 +23,9 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-
 export const db = getFirestore(app);
+export const auth = getAuth(app);
+export const googleProvider = new GoogleAuthProvider();
 
 export async function getCities() {
   const citiesCol = collection(db, 'transactions');
@@ -55,15 +58,21 @@ export async function findTxn(uid){
   }
 
 }
-export async function findAllTxn(uid) {
-  const q = query(collection(db, 'transactions'), 
-  // where('id', '==', uid)
+export async function findAllTxn(order_by='created_at',desc=true,limit_count=10){ 
+  const q = query(
+    collection(db, 'transactions'), 
+    // where('id', '==', uid)
+    orderBy(order_by,desc ? 'desc' : 'asc'),
+    limit(limit_count),
+    pageSize(limit_count)
   );
   const querySnapshot = await getDocs(q);
   console.log(querySnapshot);
+  let res  = [];
   querySnapshot.forEach((doc) => {
     // doc.data() is never undefined for query doc snapshots
-    console.log(doc.id, ' => ', doc.data());
+    // console.log(doc.id, ' => ', doc.data());
+    res.push({id:doc.id,...doc.data()})
   });
-  return querySnapshot;
+  return res;
 }

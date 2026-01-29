@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { addTxn, db, findTxn, getCities } from './firebase'; // Import your Firestore service
+import { addTxn, db, findAllTxn, findTxn, getCities } from './firebase'; // Import your Firestore service
 import './m.scss'
-import { MultiSelect } from '@mantine/core';
+// import { MultiSelect } from '@mantine/core';
 
 const TransactionForm = () => {
   const [amount, setAmount] = useState('');
@@ -27,10 +27,16 @@ const TransactionForm = () => {
       console.log('Error saving transaction:', error);
     }
   };
+  const getTransactions = async () => {
+    // const txn = await db.collection('transactions').get();
+    let r = await findAllTxn();
+    console.log(r);
+  }
 
   useEffect(() => {
     // getCities();
     // findTxn(1);
+    getTransactions();
   }, []);
   return (
     <div className='TransactionForm'>
@@ -46,15 +52,15 @@ const TransactionForm = () => {
           />
         </label> */}
         <div className='ti2'>
-          <div class="field">
+          <div className="field">
             <input
               type="number"
               placeholder="Amount"
-              value={category}
-              autofocus
-              onChange={(e) => setCategory(e.target.value)}
+              value={amount}
+              autoFocus
+              onChange={(e) => setAmount(e.target.value)}
             />
-            <div class="line"></div>
+            <div className="line"></div>
           </div>
         </div>
         {/* <label>
@@ -68,11 +74,11 @@ const TransactionForm = () => {
           {amount} | {category}
         </label>
         <button type="submit">Save</button>
-        <MultiSelect
+        {/* <MultiSelect
           label="Your favorite libraries"
           placeholder="Pick value"
           data={['React', 'Angular', 'Vue', 'Svelte']}
-        />
+        /> */}
       </form>
     </div>
   );
