@@ -1,25 +1,27 @@
 import { initializeApp } from 'firebase/app';
-// import { firestore } from 'firebase';
 import {
   getFirestore,
   collection,
   getDocs,
   addDoc,
+  updateDoc,
   query,
   where,
-  limit, orderBy,
+  limit,
+  orderBy,
   doc,
-  getDoc,serverTimestamp
+  getDoc,
+  serverTimestamp,
 } from 'firebase/firestore/lite';
-import { getAuth, GoogleAuthProvider } from "firebase/auth";
+import { getAuth, GoogleAuthProvider } from 'firebase/auth';
 
 const firebaseConfig = {
-  apiKey: 'AIzaSyC1tB8sJYOLeq3FadH9pJXd4m8cHyxQ_PM',
-  authDomain: 'wally-ph1fio.firebaseapp.com',
-  projectId: 'wally-ph1fio',
-  storageBucket: 'wally-ph1fio.appspot.com',
-  messagingSenderId: '946676094026',
-  appId: '1:946676094026:web:0cfceaff9df091a59c02b3',
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
 const app = initializeApp(firebaseConfig);
@@ -37,42 +39,84 @@ export async function getCities() {
 
 export async function addTxn(txn) {
   try {
-    txn = {...txn,is_deleted:false,created_at:serverTimestamp()}
-    const docRef = await addDoc(collection(db, 'transactions'), txn);
+    const txnData = {
+      ...txn,
+      is_deleted: false,
+      created_at: serverTimestamp(),
+    };
+    const docRef = await addDoc(collection(db, 'transactions'), txnData);
     console.log('Document written with ID: ', docRef.id);
-    return docRef
+    return { id: docRef.id, ...txnData };
   } catch (e) {
     console.error('Error adding document: ', e);
-    return false
+    throw e;
   }
 }
 
-export async function findTxn(uid){
-  const docRef = doc(db,'transactions',uid)
-  const docSnap = await getDoc(docRef);
-  if (docSnap.exists()) {
-    console.log("Document data:", docSnap.data());
-  } else {
-    // docSnap.data() will be undefined in this case
-    console.log("No such document!");
+export async function findTxn(uid) {
+  try {
+    const docRef = doc(db, 'transactions', uid);
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      return { id: docSnap.id, ...docSnap.data() };
+    } else {
+      console.log('No such document!');
+      return null;
+    }
+  } catch (e) {
+    console.error('Error finding document: ', e);
+    throw e;
   }
-
 }
-export async function findAllTxn(order_by='created_at',desc=true,limit_count=10){ 
-  const q = query(
-    collection(db, 'transactions'), 
-    // where('id', '==', uid)
-    orderBy(order_by,desc ? 'desc' : 'asc'),
-    limit(limit_count),
-    pageSize(limit_count)
-  );
-  const querySnapshot = await getDocs(q);
-  console.log(querySnapshot);
-  let res  = [];
-  querySnapshot.forEach((doc) => {
-    // doc.data() is never undefined for query doc snapshots
-    // console.log(doc.id, ' => ', doc.data());
-    res.push({id:doc.id,...doc.data()})
-  });
-  return res;
+
+export async function findAllTxn(userId = null, orderByField = 'created_at', desc = true, limitCount = 50) {
+  try {
+    const constraints = [orderBy(orderByField, desc ? 'desc' : 'asc'), limit(limitCount)];
+    
+    if (userId) {
+      constraints.push(where('userId', '==', userId));
+    }
+    
+    constraints.push(where('is_deleted', '==', false));
+    
+    const q = query(collection(db, 'transactions'), ...constraints);
+    const querySnapshot = await getDocs(q);
+    
+    const res = [];
+    querySnapshot.forEach((doc) => {
+      res.push({ id: doc.id, ...doc.data() });
+    });
+    return res;
+  } catch (e) {
+    console.error('Error finding documents: ', e);
+    throw e;
+  }
+}
+
+export async function updateTxn(id, data) {
+  try {
+    const docRef = doc(db, 'transactions', id);
+    await updateDoc(docRef, {
+      ...data,
+      updated_at: serverTimestamp(),
+    });
+    return { id, ...data };
+  } catch (e) {
+    console.error('Error updating document: ', e);
+    throw e;
+  }
+}
+
+export async function softDeleteTxn(id) {
+  try {
+    const docRef = doc(db, 'transactions', id);
+    await updateDoc(docRef, {
+      is_deleted: true,
+      deleted_at: serverTimestamp(),
+    });
+    return { id };
+  } catch (e) {
+    console.error('Error deleting document: ', e);
+    throw e;
+  }
 }

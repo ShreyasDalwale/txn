@@ -1,87 +1,120 @@
-:root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500;600&family=JetBrains+Mono:wght@300;400;500&display=swap');
+@import "tailwindcss";
 
-  color-scheme: dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #000000;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-
-a:hover {
-  color: #535bf2;
-}
-
-body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
-  font-family: 'Poppins', sans-serif;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  font-size: 1.5rem;
-  background-color: #000;
-  color: #eee;
-  font-family: monospace;
-}
-
-input {
-  letter-spacing: 4px;
-}
-
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
-
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-
-button:hover {
-  border-color: #646cff;
-}
-
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
-}
-
-@media (prefers-color-scheme: light) {
+@layer base {
   :root {
-    color: #213547;
-    background-color: #ffffff;
+    /* Cyberpunk Neon Colors */
+    --neon-cyan: #00bcd4;
+    --neon-pink: #e91e63;
+    --neon-green: #00e676;
+    --neon-blue: #2196f3;
+    --neon-purple: #9c27b0;
+    --neon-yellow: #ffc107;
+    
+    /* Core Colors */
+    --primary: var(--neon-cyan);
+    --secondary: var(--neon-green);
+    --accent: var(--neon-pink);
+    --white: #ffffff;
+    --gray: #808080;
+    --black: #000000;
+    --dark-bg: #0a0a0a;
+    --card-bg: #121212;
+    --error: #f44336;
+    --warning: var(--neon-yellow);
+    
+    /* Opacity variations */
+    --primary-10: rgba(0, 188, 212, 0.1);
+    --primary-20: rgba(0, 188, 212, 0.2);
+    --primary-30: rgba(0, 188, 212, 0.3);
+    --secondary-10: rgba(0, 230, 118, 0.1);
+    --secondary-20: rgba(0, 230, 118, 0.2);
+    --accent-10: rgba(233, 30, 99, 0.1);
+    --accent-20: rgba(233, 30, 99, 0.2);
+    --white-05: rgba(255, 255, 255, 0.05);
+    --white-10: rgba(255, 255, 255, 0.1);
+    --white-20: rgba(255, 255, 255, 0.2);
+    --white-30: rgba(255, 255, 255, 0.3);
+    --white-50: rgba(255, 255, 255, 0.5);
+    --white-70: rgba(255, 255, 255, 0.7);
+    --white-90: rgba(255, 255, 255, 0.9);
+    --error-20: rgba(244, 67, 54, 0.2);
+    
+    /* Border Radius */
+    --radius-button: 8px;
+    --radius-input: 0;
+    --radius-card: 10px;
+    --radius-dialog: 30px;
+    --radius-icon: 0;
+    --radius-avatar: 30%;
+    --radius-dropdown: 0;
+    
+    /* Neon Glow Effects */
+    --glow-cyan: 0 0 10px var(--neon-cyan), 0 0 20px var(--neon-cyan), 0 0 30px var(--neon-cyan);
+    --glow-green: 0 0 10px var(--neon-green), 0 0 20px var(--neon-green), 0 0 30px var(--neon-green);
+    --glow-pink: 0 0 10px var(--neon-pink), 0 0 20px var(--neon-pink), 0 0 30px var(--neon-pink);
+    --glow-subtle-cyan: 0 0 5px var(--primary-20), 0 0 10px var(--primary-10);
+    --glow-subtle-green: 0 0 5px var(--secondary-20), 0 0 10px var(--secondary-10);
+    
+    font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    line-height: 1.5;
+    font-weight: 400;
+
+    color-scheme: dark;
+    color: var(--white-90);
+    background-color: var(--black);
+
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
 
-  a:hover {
-    color: #747bff;
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    background: var(--black);
+    background-attachment: fixed;
+    letter-spacing: 0.3px;
+  }
+
+  #root {
+    min-height: 100vh;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    line-height: 1.2;
   }
 
   button {
-    background-color: #f9f9f9;
+    font-family: inherit;
+    cursor: pointer;
+  }
+
+  input, select, textarea {
+    font-family: inherit;
+  }
+
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--dark-bg);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--primary);
+    border-radius: 0;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--secondary);
   }
 }

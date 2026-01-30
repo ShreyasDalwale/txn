@@ -1,0 +1,80 @@
+.user-menu {
+  position: relative;
+}
+
+.user-avatar {
+  width: 45px;
+  height: 45px;
+  object-fit: cover;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-radius: var(--radius-avatar);
+}
+
+.user-avatar:hover {
+  border-color: var(--secondary);
+  transform: scale(1.05);
+}
+
+.user-dropdown {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  background: #0a0a0a;
+  border: none;
+  border-radius: var(--radius-card);
+  padding: 1rem;
+  min-width: 200px;
+  z-index: 1000;
+  animation: dropdownFade 0.2s ease;
+}
+
+@keyframes dropdownFade {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dropdown-header {
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--white-10);
+}
+
+.user-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--white-90);
+  margin: 0 0 0.25rem 0;
+}
+
+.user-email {
+  font-size: 0.85rem;
+  color: var(--white-50);
+  margin: 0;
+}
+
+.btn-logout {
+  width: 100%;
+  padding: 0.75rem;
+  background: transparent;
+  color: var(--error);
+  border: 1px solid var(--error);
+  border-radius: var(--radius-button);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  letter-spacing: 1px;
+  font-family: inherit;
+}
+
+.btn-logout:hover {
+  background: var(--error);
+  color: var(--black);
+}
