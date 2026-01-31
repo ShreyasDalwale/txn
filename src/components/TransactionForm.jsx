@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { addTxn } from '../services/firebase/firebase';
-import { TRANSACTION_CATEGORIES, TRANSACTION_TYPES } from '../constants/categories';
+import { TRANSACTION_CATEGORIES } from '../constants/categories';
 import './TransactionForm.css';
 
 const TransactionForm = ({ user, onTransactionAdded }) => {
@@ -14,6 +14,19 @@ const TransactionForm = ({ user, onTransactionAdded }) => {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [showCategoryGrid, setShowCategoryGrid] = useState(false);
+  const [categorySearchText, setCategorySearchText] = useState('');
+  
+  const amountRef = useRef(null);
+  const categoryRef = useRef(null);
+  const dateRef = useRef(null);
+
+  // Auto-focus amount when type changes
+  useEffect(() => {
+    if (amountRef.current) {
+      amountRef.current.focus();
+    }
+  }, [formData.type]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -47,6 +60,8 @@ const TransactionForm = ({ user, onTransactionAdded }) => {
         description: '',
         date: new Date().toISOString().split('T')[0],
       });
+      
+      setShowCategoryGrid(false);
 
       if (onTransactionAdded) {
         onTransactionAdded();
@@ -64,6 +79,76 @@ const TransactionForm = ({ user, onTransactionAdded }) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleTypeToggle = (type) => {
+    setFormData((prev) => ({ ...prev, type }));
+    // Reset category to first available for the selected type
+    const firstCategory = TRANSACTION_CATEGORIES.find(
+      (cat) => cat.type === type || cat.type === 'both'
+    );
+    if (firstCategory) {
+      setFormData((prev) => ({ ...prev, category: firstCategory.value }));
+    }
+  };
+
+  const handleAmountKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      categoryRef.current?.focus();
+    }
+  };
+
+  const handleCategorySelect = (categoryValue) => {
+    setFormData((prev) => ({ ...prev, category: categoryValue }));
+    setShowCategoryGrid(false);
+    setCategorySearchText('');
+  };
+
+  const handleCategoryKeyDown = (e) => {
+    // Open/close with Enter or Space
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      if (showCategoryGrid) {
+        setShowCategoryGrid(false);
+        dateRef.current?.focus();
+      } else {
+        setShowCategoryGrid(true);
+      }
+      return;
+    }
+    
+    // Close with Escape
+    if (e.key === 'Escape') {
+      setShowCategoryGrid(false);
+      setCategorySearchText('');
+      return;
+    }
+    
+    // Handle backspace
+    if (e.key === 'Backspace') {
+      e.preventDefault();
+      setCategorySearchText('');
+      return;
+    }
+    
+    // Handle letter typing
+    if (e.key.length === 1 && /[a-zA-Z]/.test(e.key)) {
+      e.preventDefault();
+      const newSearchText = categorySearchText + e.key.toLowerCase();
+      setCategorySearchText(newSearchText);
+      
+      // Find matching category
+      const matchedCategory = filteredCategories.find((cat) => 
+        cat.label.toLowerCase().includes(newSearchText) ||
+        cat.value.toLowerCase().startsWith(newSearchText)
+      );
+      
+      if (matchedCategory) {
+        setFormData((prev) => ({ ...prev, category: matchedCategory.value }));
+        setShowCategoryGrid(true);
+      }
+    }
+  };
+
   const filteredCategories = TRANSACTION_CATEGORIES.filter(
     (cat) => cat.type === formData.type || cat.type === 'both'
   );
@@ -75,85 +160,106 @@ const TransactionForm = ({ user, onTransactionAdded }) => {
       {error && <div className="error-message">{error}</div>}
       
       <form onSubmit={handleSubmit} className="transaction-form">
-        <div className="form-row">
-          <div className="form-group">
-            <label htmlFor="type">Type</label>
-            <select
-              id="type"
-              name="type"
-              value={formData.type}
-              onChange={handleChange}
-              className="form-select"
-              required
-            >
-              {TRANSACTION_TYPES.map((type) => (
-                <option key={type.value} value={type.value}>
-                  {type.label}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="amount">Amount ($)</label>
-            <input
-              type="number"
-              id="amount"
-              name="amount"
-              value={formData.amount}
-              onChange={handleChange}
-              placeholder="0.00"
-              step="0.01"
-              min="0"
-              className="form-input"
-              required
-              autoFocus
-            />
-          </div>
-        </div>
-
-        <div className="form-row">
-          <div className="form-group">
-            <label htmlFor="category">Category</label>
-            <select
-              id="category"
-              name="category"
-              value={formData.category}
-              onChange={handleChange}
-              className="form-select"
-              required
-            >
-              {filteredCategories.map((cat) => (
-                <option key={cat.value} value={cat.value}>
-                  {cat.label}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="date">Date</label>
-            <input
-              type="date"
-              id="date"
-              name="date"
-              value={formData.date}
-              onChange={handleChange}
-              className="form-input"
-              required
-            />
-          </div>
-        </div>
-
+        {/* Date */}
         <div className="form-group">
-          <label htmlFor="description">Description (Optional)</label>
+          <label htmlFor="date">Date</label>
+          <input
+            ref={dateRef}
+            type="date"
+            id="date"
+            name="date"
+            value={formData.date}
+            onChange={handleChange}
+            className="form-input"
+            required
+          />
+        </div>
+
+        {/* Type Toggle */}
+        <div className="form-group no-underline">
+          <label>Type</label>
+          <div className="type-toggle">
+            <button
+              type="button"
+              className={`toggle-btn ${formData.type === 'income' ? 'active income' : ''}`}
+              onClick={() => handleTypeToggle('income')}
+            >
+              Income
+            </button>
+            <button
+              type="button"
+              className={`toggle-btn ${formData.type === 'expense' ? 'active expense' : ''}`}
+              onClick={() => handleTypeToggle('expense')}
+            >
+              Expense
+            </button>
+          </div>
+        </div>
+
+        {/* Amount */}
+        <div className="form-group">
+          <label htmlFor="amount">Amount ($)</label>
+          <input
+            ref={amountRef}
+            type="number"
+            id="amount"
+            name="amount"
+            value={formData.amount}
+            onChange={handleChange}
+            onKeyDown={handleAmountKeyDown}
+            placeholder="0.00"
+            step="0.01"
+            min="0"
+            className="form-input"
+            required
+          />
+        </div>
+
+        {/* Category Grid */}
+        <div className="form-group">
+          <label>Category</label>
+          <button
+            type="button"
+            ref={categoryRef}
+            className="category-display"
+            onClick={() => setShowCategoryGrid(!showCategoryGrid)}
+            onFocus={() => setShowCategoryGrid(true)}
+            onBlur={() => {
+              // Delay to allow clicks on chips to register
+              setTimeout(() => setShowCategoryGrid(false), 200);
+            }}
+            onKeyDown={handleCategoryKeyDown}
+          >
+            {filteredCategories.find((cat) => cat.value === formData.category)?.label || 'Select Category'}
+          </button>
+          
+          {showCategoryGrid && (
+            <div className="category-grid">
+              {filteredCategories.map((cat) => (
+                <button
+                  key={cat.value}
+                  type="button"
+                  tabIndex="-1"
+                  className={`category-chip ${formData.category === cat.value ? 'selected' : ''}`}
+                  onClick={() => handleCategorySelect(cat.value)}
+                >
+                  {cat.label}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Description */}
+        <div className="form-group">
+          <label htmlFor="description">Description</label>
           <input
             type="text"
             id="description"
             name="description"
             value={formData.description}
             onChange={handleChange}
-            placeholder="Enter description..."
+            placeholder="Optional..."
             className="form-input"
           />
         </div>

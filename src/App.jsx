@@ -1,10 +1,10 @@
 import React from 'react';
-import { SlChart, SlShield, SlGraph, SlWallet } from 'react-icons/sl';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { SlChart, SlGraph, SlWallet } from 'react-icons/sl';
 import './App.css';
 import Header from './components/Header';
-import Stats from './components/Stats';
-import TransactionForm from './components/TransactionForm';
-import TransactionList from './components/TransactionList';
+import Dashboard from './pages/Dashboard';
+import AddTransaction from './pages/AddTransaction';
 import { useAuth } from './hooks/useAuth';
 import { useTransactions } from './hooks/useTransactions';
 
@@ -24,46 +24,62 @@ const App = () => {
   }
 
   return (
-    <div className="App">
-      <Header user={user} />
-      
-      <main className="main-content">
-        {user ? (
-          <>
-            <Stats transactions={transactions} />
-            <TransactionForm user={user} onTransactionAdded={refetch} />
-            <TransactionList
-              transactions={transactions}
-              loading={transLoading}
-              onUpdate={refetch}
-            />
-          </>
-        ) : (
-          <div className="welcome-section">
-            <div className="welcome-card">
-              <h2 className="welcome-title">Welcome to Expense Tracker</h2>
-              <p className="welcome-text">
-                Track your income and expenses effortlessly. Sign in with Google to get started.
-              </p>
-              <div className="welcome-features">
-                <div className="feature">
-                  <span className="feature-icon"><SlChart /></span>
-                  <span>Track transactions</span>
-                </div>
-                <div className="feature">
-                  <span className="feature-icon"><SlWallet /></span>
-                  <span>Monitor balance</span>
-                </div>
-                <div className="feature">
-                  <span className="feature-icon"><SlGraph /></span>
-                  <span>View statistics</span>
+    <Router>
+      <div className="App">
+        <Header user={user} />
+        
+        <main className="main-content">
+          {user ? (
+            <Routes>
+              <Route 
+                path="/" 
+                element={
+                  <Dashboard 
+                    user={user}
+                    transactions={transactions}
+                    loading={transLoading}
+                    onUpdate={refetch}
+                  />
+                } 
+              />
+              <Route 
+                path="/add" 
+                element={
+                  <AddTransaction 
+                    user={user}
+                    onTransactionAdded={refetch}
+                  />
+                } 
+              />
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          ) : (
+            <div className="welcome-section">
+              <div className="welcome-card">
+                <h2 className="welcome-title">Welcome to Expense Tracker</h2>
+                <p className="welcome-text">
+                  Track your income and expenses effortlessly. Sign in with Google to get started.
+                </p>
+                <div className="welcome-features">
+                  <div className="feature">
+                    <span className="feature-icon"><SlChart /></span>
+                    <span>Track transactions</span>
+                  </div>
+                  <div className="feature">
+                    <span className="feature-icon"><SlWallet /></span>
+                    <span>Monitor balance</span>
+                  </div>
+                  <div className="feature">
+                    <span className="feature-icon"><SlGraph /></span>
+                    <span>View statistics</span>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        )}
-      </main>
-    </div>
+          )}
+        </main>
+      </div>
+    </Router>
   );
 };
 

@@ -37,6 +37,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
+  position: relative;
 }
 
 .form-group label {
@@ -46,8 +47,47 @@
   letter-spacing: 1px;
 }
 
-.form-input,
-.form-select {
+/* Type Toggle */
+.type-toggle {
+  display: flex;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.toggle-btn {
+  flex: 1;
+  padding: 0.75rem;
+  border: 1px solid var(--white-20);
+  border-radius: var(--radius-button);
+  background: transparent;
+  color: var(--white-70);
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  letter-spacing: 1px;
+}
+
+.toggle-btn:hover {
+  border-color: var(--white-50);
+  color: var(--white-90);
+}
+
+.toggle-btn.active.income {
+  background: var(--secondary);
+  border-color: var(--secondary);
+  color: var(--black);
+}
+
+.toggle-btn.active.expense {
+  background: var(--error);
+  border-color: var(--error);
+  color: var(--white);
+}
+
+/* Form Input */
+.form-input {
   padding: 0.75rem 0;
   border: none;
   border-bottom: 1px solid var(--white-10);
@@ -57,11 +97,6 @@
   color: var(--white-90);
   transition: all 0.2s ease;
   font-family: inherit;
-  position: relative;
-}
-
-.form-group {
-  position: relative;
 }
 
 .form-group::after {
@@ -75,19 +110,21 @@
   transition: all 0.3s ease;
 }
 
+.form-group.no-underline::after {
+  display: none;
+}
+
 .form-group:focus-within::after {
   left: 0;
   right: 0;
 }
 
-.form-input:hover,
-.form-select:hover {
+.form-input:hover {
   border-bottom-color: var(--white-30);
   background: transparent;
 }
 
-.form-input:focus,
-.form-select:focus {
+.form-input:focus {
   outline: none;
   border-bottom-color: transparent;
   background: transparent;
@@ -96,19 +133,6 @@
 .form-input::placeholder {
   color: var(--white-30);
   font-weight: 300;
-}
-
-.form-select option {
-  background: var(--black);
-  color: var(--white-90);
-  padding: 0.75rem;
-  font-family: 'Manrope', sans-serif;
-}
-
-.form-select option:hover,
-.form-select option:checked {
-  background: var(--primary-20);
-  color: var(--primary);
 }
 
 /* Hide number input arrows */
@@ -123,6 +147,80 @@
   appearance: textfield;
 }
 
+/* Category Display */
+.category-display {
+  padding: 0.75rem;
+  border: 1px solid var(--white-20);
+  border-radius: var(--radius-button);
+  background: transparent;
+  color: var(--white-90);
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  text-align: left;
+  width: 100%;
+}
+
+.category-display:hover,
+.category-display:focus {
+  border-color: var(--primary);
+  background: var(--primary-10);
+  outline: none;
+}
+
+/* Category Grid */
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  padding: 1rem;
+  background: var(--dark-bg);
+  border-radius: var(--radius-card);
+  animation: slideDown 0.2s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.category-chip {
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--white-20);
+  border-radius: var(--radius-button);
+  background: transparent;
+  color: var(--white-70);
+  font-size: 0.85rem;
+  font-weight: 400;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.category-chip:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: var(--primary-10);
+}
+
+.category-chip.selected {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: var(--black);
+  font-weight: 500;
+}
+
+/* Submit Button */
 .btn-submit {
   padding: 1rem;
   border: 1px solid var(--primary);
@@ -150,6 +248,7 @@
   color: var(--white-30);
 }
 
+/* Error Message */
 .error-message {
   background: var(--dark-bg);
   border: 2px solid var(--error);
@@ -169,5 +268,9 @@
   
   .transaction-form-container {
     padding: 1.5rem;
+  }
+  
+  .category-grid {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
   }
 }
