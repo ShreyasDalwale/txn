@@ -1,0 +1,129 @@
+.transactions-page {
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.page-title {
+  font-size: 2rem;
+  font-weight: 600;
+  color: var(--white-90);
+  margin: 0 0 2rem 0;
+}
+
+.loading {
+  text-align: center;
+  padding: 3rem;
+  color: var(--white-50);
+  font-size: 1rem;
+}
+
+.transactions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.transaction-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem;
+  background: var(--dark-bg);
+  border-radius: var(--radius-card);
+  border-left: 4px solid var(--white-20);
+  transition: all 0.2s ease;
+}
+
+.transaction-item:hover {
+  background: var(--card-bg);
+}
+
+.transaction-item.income {
+  border-left-color: var(--success);
+}
+
+.transaction-item.expense {
+  border-left-color: var(--error);
+}
+
+.transaction-main {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 1;
+}
+
+.transaction-category {
+  display: flex;
+  align-items: center;
+}
+
+.category-badge {
+  padding: 0.5rem 0.75rem;
+  background: var(--primary-10);
+  color: var(--primary);
+  font-size: 0.85rem;
+  font-weight: 500;
+  border-radius: var(--radius-button);
+}
+
+.transaction-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.transaction-description {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--white-90);
+}
+
+.transaction-date {
+  font-size: 0.85rem;
+  color: var(--white-50);
+}
+
+.transaction-amount {
+  display: flex;
+  align-items: center;
+}
+
+.amount {
+  font-size: 1.1rem;
+  font-weight: 600;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.amount.income {
+  color: var(--success);
+}
+
+.amount.expense {
+  color: var(--error);
+}
+
+.no-transactions {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: var(--white-50);
+}
+
+.no-transactions p {
+  font-size: 1rem;
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .transaction-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .transaction-amount {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}

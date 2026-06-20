@@ -21,6 +21,7 @@
     --dark-bg: #0a0a0a;
     --card-bg: #121212;
     --error: #f44336;
+    --success: var(--neon-green);
     --warning: var(--neon-yellow);
     
     /* Opacity variations */

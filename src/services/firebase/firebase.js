@@ -12,7 +12,7 @@ import {
   doc,
   getDoc,
   serverTimestamp,
-} from 'firebase/firestore/lite';
+} from 'firebase/firestore';
 import { getAuth, GoogleAuthProvider } from 'firebase/auth';
 
 const firebaseConfig = {
@@ -41,9 +41,20 @@ export async function addTxn(txn) {
   try {
     const txnData = {
       ...txn,
+      // Ensure required fields from new schema
+      bookId: txn.bookId || null,
+      accountId: txn.accountId || null,
+      categoryId: txn.categoryId || txn.category || null, // Support both old and new field names
+      tags: txn.tags || [],
       is_deleted: false,
       created_at: serverTimestamp(),
     };
+    
+    // Remove old 'category' field if it exists (replaced by categoryId)
+    if (txnData.category && txnData.categoryId) {
+      delete txnData.category;
+    }
+    
     const docRef = await addDoc(collection(db, 'transactions'), txnData);
     console.log('Document written with ID: ', docRef.id);
     return { id: docRef.id, ...txnData };

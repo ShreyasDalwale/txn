@@ -1,14 +1,16 @@
 import React, { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { addTxn } from '../services/firebase/firebase';
-import { TRANSACTION_CATEGORIES } from '../constants/categories';
+import { useCategories } from '../hooks/useCategories';
+import { useBooks } from '../hooks/useBooks';
+import { useAccounts } from '../hooks/useAccounts';
 import './TransactionForm.css';
 
 const TransactionForm = ({ user, onTransactionAdded }) => {
   const [formData, setFormData] = useState({
     amount: '',
     type: 'expense',
-    category: 'food',
+    category: '',
     description: '',
     date: new Date().toISOString().split('T')[0],
   });
@@ -20,6 +22,24 @@ const TransactionForm = ({ user, onTransactionAdded }) => {
   const amountRef = useRef(null);
   const categoryRef = useRef(null);
   const dateRef = useRef(null);
+
+  // Fetch categories, books, and accounts
+  const { categories, loading: categoriesLoading } = useCategories(user?.uid, formData.type);
+  const { books } = useBooks(user?.uid);
+  const defaultBook = books?.find(b => b.isDefault) || books?.[0];
+  const { accounts } = useAccounts(user?.uid, defaultBook?.id);
+  const defaultAccount = accounts?.find(a => a.isDefault) || accounts?.[0];
+
+  // Set first category when categories load
+  useEffect(() => {
+    if (categories && categories.length > 0 && !formData.category) {
+      // Only set parent categories (level 0)
+      const parentCategories = categories.filter(c => c.level === 0);
+      if (parentCategories.length > 0) {
+        setFormData((prev) => ({ ...prev, category: parentCategories[0].id }));
+      }
+    }
+  }, [categories, formData.category]);
 
   // Auto-focus amount when type changes
   useEffect(() => {
@@ -44,19 +64,28 @@ const TransactionForm = ({ user, onTransactionAdded }) => {
 
     try {
       setLoading(true);
+      
+      // Validate that we have a book and account
+      if (!defaultBook || !defaultAccount) {
+        setError('Please set up a book and account in Settings first');
+        return;
+      }
+      
       await addTxn({
         amount: parseFloat(formData.amount),
         type: formData.type,
-        category: formData.category,
+        categoryId: formData.category,
         description: formData.description,
         date: formData.date,
         userId: user.uid,
+        bookId: defaultBook.id,
+        accountId: defaultAccount.id,
       });
 
       setFormData({
         amount: '',
         type: 'expense',
-        category: 'food',
+        category: categories?.filter(c => c.level === 0)?.[0]?.id || '',
         description: '',
         date: new Date().toISOString().split('T')[0],
       });
@@ -81,13 +110,7 @@ const TransactionForm = ({ user, onTransactionAdded }) => {
 
   const handleTypeToggle = (type) => {
     setFormData((prev) => ({ ...prev, type }));
-    // Reset category to first available for the selected type
-    const firstCategory = TRANSACTION_CATEGORIES.find(
-      (cat) => cat.type === type || cat.type === 'both'
-    );
-    if (firstCategory) {
-      setFormData((prev) => ({ ...prev, category: firstCategory.value }));
-    }
+    // Category will be updated by useEffect when categories load
   };
 
   const handleAmountKeyDown = (e) => {
@@ -138,20 +161,21 @@ const TransactionForm = ({ user, onTransactionAdded }) => {
       
       // Find matching category
       const matchedCategory = filteredCategories.find((cat) => 
-        cat.label.toLowerCase().includes(newSearchText) ||
-        cat.value.toLowerCase().startsWith(newSearchText)
+        cat.name.toLowerCase().includes(newSearchText)
       );
       
       if (matchedCategory) {
-        setFormData((prev) => ({ ...prev, category: matchedCategory.value }));
+        setFormData((prev) => ({ ...prev, category: matchedCategory.id }));
         setShowCategoryGrid(true);
       }
     }
   };
 
-  const filteredCategories = TRANSACTION_CATEGORIES.filter(
-    (cat) => cat.type === formData.type || cat.type === 'both'
-  );
+  // Filter to only parent categories (level 0)
+  const filteredCategories = categories?.filter(c => c.level === 0) || [];
+
+  // Get selected category object
+  const selectedCategory = categories?.find(c => c.id === formData.category);
 
   return (
     <div className="transaction-form-container">
@@ -230,22 +254,32 @@ const TransactionForm = ({ user, onTransactionAdded }) => {
             }}
             onKeyDown={handleCategoryKeyDown}
           >
-            {filteredCategories.find((cat) => cat.value === formData.category)?.label || 'Select Category'}
+            {selectedCategory?.name || 'Select Category'}
           </button>
           
           {showCategoryGrid && (
             <div className="category-grid">
-              {filteredCategories.map((cat) => (
-                <button
-                  key={cat.value}
-                  type="button"
-                  tabIndex="-1"
-                  className={`category-chip ${formData.category === cat.value ? 'selected' : ''}`}
-                  onClick={() => handleCategorySelect(cat.value)}
-                >
-                  {cat.label}
-                </button>
-              ))}
+              {categoriesLoading ? (
+                <div className="loading-categories">Loading categories...</div>
+              ) : filteredCategories.length > 0 ? (
+                filteredCategories.map((cat) => (
+                  <button
+                    key={cat.id}
+                    type="button"
+                    tabIndex="-1"
+                    className={`category-chip ${formData.category === cat.id ? 'selected' : ''}`}
+                    onClick={() => handleCategorySelect(cat.id)}
+                    style={{ '--category-color': cat.color }}
+                  >
+                    {cat.icon && <span className="category-icon">{cat.icon}</span>}
+                    {cat.name}
+                  </button>
+                ))
+              ) : (
+                <div className="no-categories">
+                  No categories found. <a href="/settings">Add categories in Settings</a>
+                </div>
+              )}
             </div>
           )}
         </div>

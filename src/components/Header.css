@@ -2,9 +2,11 @@
   background: transparent;
   border: none;
   padding: 1rem 0;
-  position: sticky;
+  position: fixed;
   top: 0;
-  z-index: 100;
+  left: 240px;
+  right: 0;
+  z-index: 90;
   backdrop-filter: blur(10px);
   transition: all 0.3s ease;
 }
@@ -31,6 +33,16 @@
   color: var(--primary);
   margin: 0;
   letter-spacing: 4px;
+}
+
+@media (max-width: 968px) {
+  .header {
+    left: 0;
+  }
+  
+  .app-title {
+    font-size: 1.5rem;
+  }
 }
 
 .user-section {

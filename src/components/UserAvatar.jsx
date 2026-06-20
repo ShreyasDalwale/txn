@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { logout } from '../services/auth';
 import './UserAvatar.css';
@@ -46,6 +47,13 @@ const UserAvatar = ({ user }) => {
             <p className="user-name">{user.displayName}</p>
             <p className="user-email">{user.email}</p>
           </div>
+          <Link 
+            to="/settings" 
+            className="dropdown-link"
+            onClick={() => setShowDropdown(false)}
+          >
+            Settings
+          </Link>
           <button onClick={handleLogout} className="btn-logout">
             Logout
           </button>
