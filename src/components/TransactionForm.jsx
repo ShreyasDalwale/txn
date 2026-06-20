@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { addTxn, updateTxn } from '../services/firebase/firebase';
 import { useCategories } from '../hooks/useCategories';
-import { useBooks } from '../hooks/useBooks';
 import { useAccounts } from '../hooks/useAccounts';
 import { SlClose } from 'react-icons/sl';
 
@@ -13,6 +12,7 @@ const TransactionForm = ({ user, transactionToEdit, onTransactionAdded, onClose 
     category: '',
     description: '',
     date: '',
+    accountId: '',
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -22,10 +22,7 @@ const TransactionForm = ({ user, transactionToEdit, onTransactionAdded, onClose 
   const categoryRef = useRef(null);
 
   const { categories, loading: categoriesLoading } = useCategories(user?.uid);
-  const { books } = useBooks(user?.uid);
-  const defaultBook = books?.find((b) => b.isDefault) || books?.[0];
-  const { accounts } = useAccounts(user?.uid, defaultBook?.id);
-  const defaultAccount = accounts?.find((a) => a.isDefault) || accounts?.[0];
+  const { accounts, loading: accountsLoading } = useAccounts(user?.uid);
 
   // Sync state with transactionToEdit or reset on new transaction
   useEffect(() => {
@@ -36,6 +33,7 @@ const TransactionForm = ({ user, transactionToEdit, onTransactionAdded, onClose 
         category: transactionToEdit.categoryId || transactionToEdit.category || '',
         description: transactionToEdit.description || '',
         date: transactionToEdit.date || '',
+        accountId: transactionToEdit.accountId || '',
       });
     } else {
       const now = new Date();
@@ -49,10 +47,31 @@ const TransactionForm = ({ user, transactionToEdit, onTransactionAdded, onClose 
         category: '',
         description: '',
         date: initialDateTime,
+        accountId: '',
       });
     }
     setError('');
   }, [transactionToEdit]);
+
+  // Set default account when accounts load
+  useEffect(() => {
+    if (accounts && accounts.length > 0 && !formData.accountId) {
+      if (transactionToEdit) {
+        setFormData((prev) => ({
+          ...prev,
+          accountId: transactionToEdit.accountId || accounts[0]?.id || '',
+        }));
+      } else {
+        const defaultAccount = accounts.find((a) => a.isDefault) || accounts[0];
+        if (defaultAccount) {
+          setFormData((prev) => ({
+            ...prev,
+            accountId: defaultAccount.id,
+          }));
+        }
+      }
+    }
+  }, [accounts, transactionToEdit, formData.accountId]);
 
   // Set default category when categories load
   useEffect(() => {
@@ -82,8 +101,13 @@ const TransactionForm = ({ user, transactionToEdit, onTransactionAdded, onClose 
     try {
       setLoading(true);
 
-      if (!defaultBook || !defaultAccount) {
-        setError('Please set up a book and account in Settings first');
+      if (!accounts || accounts.length === 0) {
+        setError('Please set up an account in Settings first');
+        return;
+      }
+
+      if (!formData.accountId) {
+        setError('Please select an account');
         return;
       }
 
@@ -94,8 +118,8 @@ const TransactionForm = ({ user, transactionToEdit, onTransactionAdded, onClose 
         description: formData.description,
         date: formData.date,
         userId: user.uid,
-        bookId: transactionToEdit?.bookId || defaultBook.id,
-        accountId: transactionToEdit?.accountId || defaultAccount.id,
+        bookId: null,
+        accountId: formData.accountId,
       };
 
       if (transactionToEdit) {
@@ -110,12 +134,15 @@ const TransactionForm = ({ user, transactionToEdit, onTransactionAdded, onClose 
           new Date().getDate()
         ).padStart(2, '0')}T${String(new Date().getHours()).padStart(2, '0')}:${String(new Date().getMinutes()).padStart(2, '0')}`;
 
+        const defaultAccount = accounts?.find((a) => a.isDefault) || accounts?.[0];
+
         setFormData({
           amount: '',
           type: 'expense',
           category: categories?.filter((c) => c.level === 0)?.[0]?.id || '',
           description: '',
           date: nextDateTime,
+          accountId: defaultAccount?.id || '',
         });
       }
 
@@ -156,12 +183,12 @@ const TransactionForm = ({ user, transactionToEdit, onTransactionAdded, onClose 
 
   return (
     <div className="flex flex-col h-full bg-transparent">
+      {/* Spacer to push content to bottom on mobile */}
+      <div className="flex-1 md:hidden" />
+
       {/* Header and Close Action */}
       <div className="flex items-center justify-between border-b border-slate-200 dark:border-zinc-800 pb-4 mb-6">
         <div>
-          <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">
-            {transactionToEdit ? 'Editing' : 'Record'}
-          </p>
           <h2 className="text-xl font-extrabold tracking-tight text-slate-900 dark:text-white mt-0.5">
             {transactionToEdit ? 'Edit Transaction' : 'Add Transaction'}
           </h2>
@@ -184,8 +211,9 @@ const TransactionForm = ({ user, transactionToEdit, onTransactionAdded, onClose 
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-5 flex-1 relative z-10">
-        {/* Toggle Income / Expense */}
+      <form onSubmit={handleSubmit} className="flex flex-col relative z-10 space-y-6">
+        <div className="space-y-5">
+          {/* Toggle Income / Expense */}
         <div>
           <label className="mb-2 block text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Type</label>
           <div className="grid grid-cols-2 gap-1.5 rounded-2xl bg-slate-100 dark:bg-zinc-950 border border-slate-200/40 dark:border-zinc-800/40 p-1">
@@ -253,6 +281,36 @@ const TransactionForm = ({ user, transactionToEdit, onTransactionAdded, onClose 
           </div>
         </div>
 
+        {/* Account selector */}
+        <div>
+          <label htmlFor="accountId" className="mb-2 block text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">
+            Account
+          </label>
+          {accountsLoading ? (
+            <div className="h-11 w-full animate-pulse rounded-2xl bg-slate-100 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800" />
+          ) : accounts.length > 0 ? (
+            <select
+              id="accountId"
+              name="accountId"
+              value={formData.accountId}
+              onChange={handleChange}
+              className="w-full rounded-2xl glow-focus px-4 py-3 text-sm text-slate-900 dark:text-slate-100 bg-white dark:bg-zinc-950 transition-all duration-150"
+              required
+            >
+              <option value="" disabled>Select an account</option>
+              {accounts.map((acc) => (
+                <option key={acc.id} value={acc.id}>
+                  {acc.icon || '💳'} {acc.name} (${acc.balance?.toFixed(2) || '0.00'})
+                </option>
+              ))}
+            </select>
+          ) : (
+            <div className="text-xs font-bold text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-900/10 border border-rose-200 dark:border-rose-900/20 rounded-2xl px-4 py-3.5">
+              Please set up an account in Settings first.
+            </div>
+          )}
+        </div>
+
         {/* Category selector */}
         <div>
           <label className="mb-2 block text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Category</label>
@@ -307,15 +365,16 @@ const TransactionForm = ({ user, transactionToEdit, onTransactionAdded, onClose 
           <label htmlFor="description" className="mb-2 block text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">
             Description
           </label>
-          <input
-            type="text"
+          <textarea
             id="description"
             name="description"
             value={formData.description}
             onChange={handleChange}
             placeholder="Optional notes"
-            className="w-full rounded-2xl glow-focus px-4 py-3 text-sm text-slate-900 dark:text-slate-100 transition-all duration-150"
+            rows="2"
+            className="w-full rounded-2xl glow-focus px-4 py-3 text-sm text-slate-900 dark:text-slate-100 transition-all duration-150 resize-none"
           />
+        </div>
         </div>
 
         {/* Action Buttons */}

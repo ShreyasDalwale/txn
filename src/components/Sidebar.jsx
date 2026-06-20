@@ -11,7 +11,7 @@ const navItems = [
   { to: '/settings', label: 'Settings', icon: SlSettings },
 ];
 
-const Sidebar = ({ activeBook, user, onAddClick }) => {
+const Sidebar = ({ user, onAddClick }) => {
   return (
     <aside className="fixed left-0 top-0 hidden h-screen w-72 border-r border-slate-200 dark:border-zinc-800 bg-white dark:bg-black px-5 pt-6 md:flex z-20">
       <div className="flex h-full w-full flex-col">
@@ -21,9 +21,9 @@ const Sidebar = ({ activeBook, user, onAddClick }) => {
             TX
           </div>
           <div className="min-w-0">
-            <p className="text-[10px] uppercase font-bold tracking-widest text-slate-400 dark:text-slate-500">Workspace</p>
+            <p className="text-[10px] uppercase font-bold tracking-widest text-slate-400 dark:text-slate-500">Wallet</p>
             <p className="truncate text-sm font-bold text-slate-700 dark:text-slate-200 mt-0.5">
-              {activeBook ? activeBook.name : 'Personal'}
+              My Wallet
             </p>
           </div>
         </div>
@@ -79,10 +79,6 @@ const Sidebar = ({ activeBook, user, onAddClick }) => {
 };
 
 Sidebar.propTypes = {
-  activeBook: PropTypes.shape({
-    id: PropTypes.string,
-    name: PropTypes.string,
-  }),
   user: PropTypes.shape({
     displayName: PropTypes.string,
     email: PropTypes.string,

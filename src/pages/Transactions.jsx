@@ -7,7 +7,6 @@ const Transactions = ({ user, transactions, loading, onUpdate, onEditClick }) =>
     <div className="space-y-6 pb-8">
       {/* Transactions Header */}
       <div>
-        <p className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-widest">History</p>
         <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white mt-0.5">Transactions</h1>
       </div>
 

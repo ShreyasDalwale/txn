@@ -1,9 +1,8 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { SlHome, SlWallet, SlSettings, SlPlus } from 'react-icons/sl';
-import PropTypes from 'prop-types';
+import { SlHome, SlWallet, SlSettings } from 'react-icons/sl';
 
-const BottomNav = ({ onAddClick }) => {
+const BottomNav = () => {
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-30 flex h-16 items-center justify-around border-t border-slate-200 dark:border-zinc-800 bg-white dark:bg-black px-4 md:hidden pb-safe">
       {/* Home Link */}
@@ -32,18 +31,6 @@ const BottomNav = ({ onAddClick }) => {
         <span>Txns</span>
       </NavLink>
 
-      {/* Center Plus CTA */}
-      <div className="flex flex-1 justify-center">
-        <button
-          type="button"
-          onClick={onAddClick}
-          className="flex h-11 w-11 items-center justify-center rounded-xl bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 outline-none transition duration-150 active:scale-90"
-          aria-label="Add transaction"
-        >
-          <SlPlus className="text-lg font-bold" />
-        </button>
-      </div>
-
       {/* Settings Link */}
       <NavLink
         to="/settings"
@@ -58,10 +45,6 @@ const BottomNav = ({ onAddClick }) => {
       </NavLink>
     </nav>
   );
-};
-
-BottomNav.propTypes = {
-  onAddClick: PropTypes.func.isRequired,
 };
 
 export default BottomNav;
