@@ -1,60 +1,37 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import './Transactions.css';
+import TransactionList from '../components/TransactionList';
 
-const Transactions = ({ user, transactions, loading, onUpdate }) => {
-  if (loading) {
-    return (
-      <div className="transactions-page">
-        <h1 className="page-title">Transactions</h1>
-        <div className="loading">Loading transactions...</div>
-      </div>
-    );
-  }
-
+const Transactions = ({ user, transactions, loading, onUpdate, onEditClick }) => {
   return (
-    <div className="transactions-page">
-      <h1 className="page-title">All Transactions</h1>
-      
-      {transactions && transactions.length > 0 ? (
-        <div className="transactions-list">
-          {transactions.map((txn) => (
-            <div key={txn.id} className={`transaction-item ${txn.type}`}>
-              <div className="transaction-main">
-                <div className="transaction-category">
-                  <span className="category-badge">{txn.category || txn.categoryId}</span>
-                </div>
-                <div className="transaction-details">
-                  <span className="transaction-description">
-                    {txn.description || 'No description'}
-                  </span>
-                  <span className="transaction-date">
-                    {new Date(txn.date).toLocaleDateString()}
-                  </span>
-                </div>
-              </div>
-              <div className="transaction-amount">
-                <span className={`amount ${txn.type}`}>
-                  {txn.type === 'income' ? '+' : '-'}${Math.abs(txn.amount).toFixed(2)}
-                </span>
-              </div>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <div className="no-transactions">
-          <p>No transactions yet. Start by adding your first transaction!</p>
-        </div>
-      )}
+    <div className="space-y-6 pb-8">
+      {/* Transactions Header */}
+      <div>
+        <p className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-widest">History</p>
+        <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white mt-0.5">Transactions</h1>
+      </div>
+
+      {/* Shared Transaction List Component */}
+      <TransactionList
+        userId={user?.uid}
+        transactions={transactions}
+        loading={loading}
+        onUpdate={onUpdate}
+        onEditClick={onEditClick}
+        title="All Transactions"
+      />
     </div>
   );
 };
 
 Transactions.propTypes = {
-  user: PropTypes.object,
+  user: PropTypes.shape({
+    uid: PropTypes.string,
+  }),
   transactions: PropTypes.array,
   loading: PropTypes.bool,
   onUpdate: PropTypes.func,
+  onEditClick: PropTypes.func.isRequired,
 };
 
 export default Transactions;

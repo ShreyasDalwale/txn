@@ -1,0 +1,24 @@
+# Coding Instructions & Guidelines
+
+Before editing any code in this repository, ensure you adhere to the following rules:
+
+1. **Tailwind CSS Styling**:
+   - Use Tailwind CSS utility classes 99% of the time.
+   - Avoid creating or writing custom CSS files or `<style>` blocks, unless absolutely necessary.
+   - Use Tailwind v4 theme variables defined in `src/index.css` for primary/secondary styling.
+
+2. **Simple, Clean, and DRY Code**:
+   - Write highly readable, simple, and self-documenting code.
+   - Do not duplicate components (e.g. reuse components like `TransactionList` instead of writing custom inline list logic).
+   - Keep state management clean and localized where possible, or use prop drilling/react context for layout state.
+
+3. **Responsive Web & Mobile Layout**:
+   - **Desktop Layout**: 2-pane by default (Sidebar on the left, Main Content in the center). When creating or editing transaction entries, a third pane must open on the right side.
+   - **Mobile Layout**: Sidebar is hidden. Bottom Navigation is active. The third pane (transaction form) must open as a full-screen overlay when creating or editing transactions.
+
+4. **Google / Netflix Flat Style Design System**:
+   - **No Drop Shadows**: Avoid visual drop shadows (always apply `shadow-none` or rely on thin borders for cards, modals, sidebar lists, and dropdown panels).
+   - **No Gradients**: Eliminate ambient backgrounds, text, and button gradients. Use flat solid fills (e.g. solid `bg-brand-teal`, `bg-slate-900`, `dark:bg-zinc-900`, or `dark:bg-[#0c0c0c]`).
+   - **Matching Backgrounds**: Keep the background of the main center layout (Panel 2) and the slide-in drawer/overlay (Panel 3) identical (`bg-slate-50 dark:bg-[#0c0c0c]`) so they blend together seamlessly.
+   - **Proper Form Input Backgrounds**: Input fields must use the unified `.glow-focus` style class (which defaults to a dark semi-transparent `zinc-900/30` in dark theme) rather than white fields. Do not use invalid Tailwind color classes (e.g. `zinc-905`, `rose-955`, `rose-455`, `emerald-450`) as they break color fallback rendering.
+

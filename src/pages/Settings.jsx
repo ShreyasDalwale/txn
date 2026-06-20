@@ -8,13 +8,12 @@ import { addBook, updateBook, deleteBook } from '../services/firebase/firestore/
 import { addAccount, updateAccount, deleteAccount } from '../services/firebase/firestore/accounts';
 import { addCategory, updateCategory, deleteCategory } from '../services/firebase/firestore/categories';
 import { addTag, updateTag, deleteTag } from '../services/firebase/firestore/tags';
-import './Settings.css';
 
 const ColorPicker = ({ value, onChange, defaultColor }) => {
   const currentColor = value || defaultColor;
   const [localText, setLocalText] = useState(currentColor);
 
-  // Sync local text when value changes from outside (preset or prop change)
+  // Sync local text when value changes from outside
   useEffect(() => {
     setLocalText(currentColor);
   }, [currentColor]);
@@ -54,14 +53,20 @@ const ColorPicker = ({ value, onChange, defaultColor }) => {
   const nativeValue = isValidHex(currentColor) ? currentColor : defaultColor;
 
   return (
-    <div className="color-picker-container">
-      <label className="color-picker-label">Color Theme</label>
-      <div className="color-presets">
+    <div className="space-y-3">
+      <label className="block text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Color Theme</label>
+      
+      {/* Preset Palette */}
+      <div className="flex flex-wrap gap-2">
         {presets.map((preset) => (
           <button
             key={preset}
             type="button"
-            className={`color-preset-btn ${currentColor.toLowerCase() === preset.toLowerCase() ? 'active' : ''}`}
+            className={`h-7 w-7 rounded-full border border-slate-200 dark:border-zinc-800 shadow-none transition-all duration-150 hover:scale-105 active:scale-95 ${
+              currentColor.toLowerCase() === preset.toLowerCase()
+                ? 'ring-2 ring-slate-900 dark:ring-white ring-offset-2 dark:ring-offset-zinc-900 scale-105 shadow-none'
+                : ''
+            }`}
             style={{ backgroundColor: preset }}
             onClick={() => {
               onChange(preset);
@@ -71,8 +76,10 @@ const ColorPicker = ({ value, onChange, defaultColor }) => {
           />
         ))}
       </div>
-      <div className="color-custom-row">
-        <div className="color-preview-wrapper" title="Choose custom color">
+
+      {/* Native Picker & Hex Input */}
+      <div className="flex items-center gap-3">
+        <div className="relative flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-2xl border border-slate-200 dark:border-zinc-800 overflow-hidden bg-slate-50 dark:bg-zinc-950 shadow-none transition-all hover:border-slate-350 dark:hover:border-zinc-700">
           <input
             type="color"
             value={nativeValue}
@@ -81,16 +88,16 @@ const ColorPicker = ({ value, onChange, defaultColor }) => {
               onChange(newColor);
               setLocalText(newColor);
             }}
-            className="color-input-native"
+            className="absolute inset-0 h-full w-full opacity-0 cursor-pointer"
           />
-          <div className="color-preview-swatch" style={{ backgroundColor: currentColor }} />
+          <div className="h-6 w-6 rounded-lg border border-slate-200 dark:border-zinc-800 shadow-none" style={{ backgroundColor: currentColor }} />
         </div>
         <input
           type="text"
           value={localText}
           onChange={(e) => handleTextChange(e.target.value)}
           placeholder="#HEX"
-          className="color-input-text"
+          className="flex-1 rounded-2xl glow-focus px-4 py-3 text-sm text-slate-900 dark:text-slate-100 font-mono uppercase"
         />
       </div>
     </div>
@@ -200,66 +207,68 @@ const Settings = ({ user, activeBookId, onActiveBookChange }) => {
   };
 
   const getItems = () => {
-    if (activeTab === 'books') return books;
-    if (activeTab === 'accounts') return accounts;
-    if (activeTab === 'categories') return categories;
-    if (activeTab === 'tags') return tags;
+    if (activeTab === 'books') return books || [];
+    if (activeTab === 'accounts') return accounts || [];
+    if (activeTab === 'categories') return categories || [];
+    if (activeTab === 'tags') return tags || [];
     return [];
   };
 
   const renderForm = () => {
+    const inputClasses = "w-full rounded-2xl glow-focus px-4 py-3 text-sm text-slate-900 dark:text-slate-100";
+    
     if (activeTab === 'books') {
       return (
-        <>
+        <div className="space-y-4">
           <input
             type="text"
             placeholder="Book Name"
             value={formData.name || ''}
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            className="form-input"
+            className={inputClasses}
           />
           <input
             type="text"
             placeholder="Description"
             value={formData.description || ''}
             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-            className="form-input"
+            className={inputClasses}
           />
           <input
             type="text"
             placeholder="Currency (USD)"
             value={formData.currency || 'USD'}
             onChange={(e) => setFormData({ ...formData, currency: e.target.value })}
-            className="form-input"
+            className={inputClasses}
           />
           <input
             type="text"
-            placeholder="Icon (💰)"
+            placeholder="Icon (📖)"
             value={formData.icon || ''}
             onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
-            className="form-input"
+            className={inputClasses}
           />
           <ColorPicker
             value={formData.color}
             onChange={(color) => setFormData({ ...formData, color })}
-            defaultColor="#00bcd4"
+            defaultColor="#11998e"
           />
-        </>
+        </div>
       );
     } else if (activeTab === 'accounts') {
       return (
-        <>
+        <div className="space-y-4">
           <input
             type="text"
             placeholder="Account Name"
             value={formData.name || ''}
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            className="form-input"
+            className={inputClasses}
           />
           <select
             value={formData.type || 'bank'}
             onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-            className="form-input"
+            className={inputClasses}
           >
             <option value="bank">Bank Account</option>
             <option value="cash">Cash</option>
@@ -271,14 +280,14 @@ const Settings = ({ user, activeBookId, onActiveBookChange }) => {
             placeholder="Initial Balance"
             value={formData.balance || ''}
             onChange={(e) => setFormData({ ...formData, balance: e.target.value })}
-            className="form-input"
+            className={inputClasses}
           />
           <select
             value={formData.bookId || books[0]?.id || ''}
             onChange={(e) => setFormData({ ...formData, bookId: e.target.value })}
-            className="form-input"
+            className={inputClasses}
           >
-            {books.map((book) => (
+            {books?.map((book) => (
               <option key={book.id} value={book.id}>{book.name}</option>
             ))}
           </select>
@@ -287,29 +296,29 @@ const Settings = ({ user, activeBookId, onActiveBookChange }) => {
             placeholder="Icon (🏦)"
             value={formData.icon || ''}
             onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
-            className="form-input"
+            className={inputClasses}
           />
           <ColorPicker
             value={formData.color}
             onChange={(color) => setFormData({ ...formData, color })}
-            defaultColor="#00e676"
+            defaultColor="#10b981"
           />
-        </>
+        </div>
       );
     } else if (activeTab === 'categories') {
       return (
-        <>
+        <div className="space-y-4">
           <input
             type="text"
             placeholder="Category Name"
             value={formData.name || ''}
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            className="form-input"
+            className={inputClasses}
           />
           <select
             value={formData.type || 'expense'}
             onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-            className="form-input"
+            className={inputClasses}
           >
             <option value="expense">Expense</option>
             <option value="income">Income</option>
@@ -320,164 +329,210 @@ const Settings = ({ user, activeBookId, onActiveBookChange }) => {
             placeholder="Icon (🍔)"
             value={formData.icon || ''}
             onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
-            className="form-input"
+            className={inputClasses}
           />
           <ColorPicker
             value={formData.color}
             onChange={(color) => setFormData({ ...formData, color })}
-            defaultColor="#e91e63"
+            defaultColor="#f43f5e"
           />
-        </>
+        </div>
       );
     } else if (activeTab === 'tags') {
       return (
-        <>
+        <div className="space-y-4">
           <input
             type="text"
             placeholder="Tag Name"
             value={formData.name || ''}
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            className="form-input"
+            className={inputClasses}
           />
           <input
             type="text"
             placeholder="Icon (✈️)"
             value={formData.icon || ''}
             onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
-            className="form-input"
+            className={inputClasses}
           />
           <ColorPicker
             value={formData.color}
             onChange={(color) => setFormData({ ...formData, color })}
-            defaultColor="#9c27b0"
+            defaultColor="#8b5cf6"
           />
-        </>
+        </div>
       );
     }
   };
 
-  return (
-    <div className="settings-page">
-      <h1 className="settings-title">Settings</h1>
+  const tabs = [
+    { id: 'preference', label: 'Preference' },
+    { id: 'books', label: 'Books' },
+    { id: 'accounts', label: 'Accounts' },
+    { id: 'categories', label: 'Categories' },
+    { id: 'tags', label: 'Tags' },
+  ];
 
-      <div className="settings-tabs">
-        <button
-          className={`tab-btn ${activeTab === 'preference' ? 'active' : ''}`}
-          onClick={() => { setActiveTab('preference'); cancelEdit(); }}
-        >
-          Preference
-        </button>
-        <button
-          className={`tab-btn ${activeTab === 'books' ? 'active' : ''}`}
-          onClick={() => { setActiveTab('books'); cancelEdit(); }}
-        >
-          Books
-        </button>
-        <button
-          className={`tab-btn ${activeTab === 'accounts' ? 'active' : ''}`}
-          onClick={() => { setActiveTab('accounts'); cancelEdit(); }}
-        >
-          Accounts
-        </button>
-        <button
-          className={`tab-btn ${activeTab === 'categories' ? 'active' : ''}`}
-          onClick={() => { setActiveTab('categories'); cancelEdit(); }}
-        >
-          Categories
-        </button>
-        <button
-          className={`tab-btn ${activeTab === 'tags' ? 'active' : ''}`}
-          onClick={() => { setActiveTab('tags'); cancelEdit(); }}
-        >
-          Tags
-        </button>
+  return (
+    <div className="space-y-6 pb-8 relative z-10">
+      {/* Settings Title */}
+      <div>
+        <p className="text-xs font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Configuration</p>
+        <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white mt-0.5">Settings</h1>
       </div>
 
-      <div className="settings-content">
+      {/* Tabs list */}
+      <div className="flex gap-1.5 border-b border-slate-200 dark:border-zinc-800 pb-2.5 overflow-x-auto">
+        {tabs.map((tab) => (
+          <button
+            key={tab.id}
+            type="button"
+            className={`rounded-xl px-4 py-2.5 text-xs font-bold transition-all duration-150 flex-shrink-0 outline-none ${
+              activeTab === tab.id
+                ? 'bg-slate-900 dark:bg-zinc-800 text-white shadow-none'
+                : 'text-slate-550 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-zinc-900/50 hover:text-slate-900 dark:hover:text-white'
+            }`}
+            onClick={() => {
+              setActiveTab(tab.id);
+              cancelEdit();
+            }}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Tab Panels */}
+      <div>
         {activeTab === 'preference' ? (
-          <div className="preference-section">
-            <h3>Active Book</h3>
-            <p className="preference-description">Select which book to use for new transactions</p>
-            <div className="book-selection">
+          <div className="p-6 rounded-3xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-none max-w-3xl">
+            <h3 className="text-lg font-bold text-slate-900 dark:text-white tracking-tight">Active Book</h3>
+            <p className="text-xs font-semibold text-slate-400 dark:text-slate-500 mt-1">Select which book to use for transaction logs</p>
+            
+            <div className="mt-6 space-y-3">
               {books?.map((book) => (
                 <div
                   key={book.id}
-                  className={`book-option ${activeBookId === book.id ? 'selected' : ''}`}
+                  className={`flex items-center gap-3.5 rounded-2xl border p-4 cursor-pointer transition-all duration-150 ${
+                    activeBookId === book.id
+                      ? 'border-brand-teal bg-brand-teal/5 dark:bg-brand-teal/10 shadow-none font-bold'
+                      : 'border-slate-200 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/20 hover:border-slate-300 dark:hover:border-zinc-700 hover:bg-slate-100 dark:hover:bg-zinc-900'
+                  }`}
                   onClick={() => onActiveBookChange(book.id)}
                 >
-                  <span className="book-option-icon">{book.icon || '📖'}</span>
-                  <div className="book-option-details">
-                    <span className="book-option-name">{book.name}</span>
-                    <span className="book-option-currency">{book.currency || 'USD'}</span>
+                  <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-white dark:bg-zinc-850 text-lg border border-slate-200 dark:border-zinc-850 shadow-none">
+                    {book.icon || '📖'}
+                  </span>
+                  <div>
+                    <span className="block text-sm font-bold text-slate-900 dark:text-slate-200">{book.name}</span>
+                    <span className="block text-[10px] font-bold text-slate-400 dark:text-slate-500 mt-0.5 uppercase tracking-wider">{book.currency || 'USD'}</span>
                   </div>
                   {activeBookId === book.id && (
-                    <span className="book-selected-badge">Active</span>
+                    <span className="ml-auto rounded-lg bg-brand-teal text-white text-[10px] font-bold px-2 py-0.5">
+                      Active
+                    </span>
                   )}
                 </div>
               ))}
               {(!books || books.length === 0) && (
-                <p className="no-books">No books found. Create a book first in the Books tab.</p>
+                <p className="text-sm font-semibold text-slate-400 dark:text-slate-500 text-center py-8">
+                  No books found. Please create a book first in the Books tab.
+                </p>
               )}
             </div>
           </div>
         ) : (
-          <>
-        <div className="settings-form">
-          <h3>{editingItem ? 'Edit' : 'Add New'} {activeTab.slice(0, -1)}</h3>
-          {renderForm()}
-          <div className="form-actions">
-            {editingItem ? (
-              <>
-                <button onClick={handleUpdate} disabled={loading} className="btn-save">
-                  Update
-                </button>
-                <button onClick={cancelEdit} className="btn-cancel">
-                  Cancel
-                </button>
-              </>
-            ) : (
-              <button onClick={handleAdd} disabled={loading} className="btn-add">
-                Add
-              </button>
-            )}
-          </div>
-        </div>
-
-        <div className="settings-list">
-          <h3>Existing {activeTab}</h3>
-          <div className="items-grid">
-            {getItems().map((item) => (
-              <div key={item.id} className="item-card">
-                <div className="item-info">
-                  {item.icon && <span className="item-icon">{item.icon}</span>}
-                  <div className="item-details">
-                    <h4 className="item-name">{item.name}</h4>
-                    {activeTab === 'accounts' && (
-                      <p className="item-meta">
-                        {item.type} • ${item.balance?.toFixed(2) || '0.00'}
-                      </p>
-                    )}
-                    {activeTab === 'categories' && (
-                      <p className="item-meta">{item.type}</p>
-                    )}
-                    {activeTab === 'tags' && (
-                      <p className="item-meta">{item.usageCount || 0} uses</p>
-                    )}
-                  </div>
-                </div>
-                <div className="item-actions">
-                  <button onClick={() => startEdit(item)} className="btn-edit">
-                    Edit
+          <div className="grid gap-6 lg:grid-cols-3">
+            {/* Form Panel */}
+            <div className="lg:col-span-1 p-6 rounded-3xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-none h-fit">
+              <h3 className="text-md font-bold text-slate-900 dark:text-white mb-4 tracking-tight">
+                {editingItem ? 'Edit' : 'Add New'} {activeTab.slice(0, -1)}
+              </h3>
+              {renderForm()}
+              <div className="mt-5 flex gap-2">
+                {editingItem ? (
+                  <>
+                    <button
+                      onClick={handleUpdate}
+                      disabled={loading}
+                      className="flex-1 rounded-2xl bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-white text-white dark:text-slate-900 py-3 px-4 text-xs font-bold transition duration-150 active:scale-[0.98] disabled:opacity-50"
+                    >
+                      Update
+                    </button>
+                    <button
+                      onClick={cancelEdit}
+                      className="flex-1 rounded-2xl border border-slate-200 dark:border-zinc-800 hover:bg-slate-100 dark:hover:bg-zinc-900 text-slate-500 py-3 px-4 text-xs font-bold transition duration-150 active:scale-[0.98]"
+                    >
+                      Cancel
+                    </button>
+                  </>
+                ) : (
+                  <button
+                    onClick={handleAdd}
+                    disabled={loading}
+                    className="w-full rounded-2xl bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-white text-white dark:text-slate-900 py-3.5 px-4 text-xs font-bold transition duration-150 active:scale-[0.98] disabled:opacity-50"
+                  >
+                    Add
                   </button>
-                  <button onClick={() => handleDelete(item.id)} className="btn-delete">
-                    Delete
-                  </button>
-                </div>
+                )}
               </div>
-            ))}
+            </div>
+
+            {/* List Panel */}
+            <div className="lg:col-span-2 p-6 rounded-3xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-none">
+              <h3 className="text-md font-bold text-slate-900 dark:text-white mb-4 tracking-tight">Existing {activeTab}</h3>
+              <div className="grid gap-3 sm:grid-cols-2">
+                {getItems().map((item) => (
+                  <div
+                    key={item.id}
+                    className="flex items-center justify-between gap-4 border border-slate-200 dark:border-zinc-800 bg-slate-50/50 dark:bg-zinc-950/20 rounded-2xl p-4 hover:bg-slate-100/50 dark:hover:bg-zinc-850/50 transition duration-150"
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      {item.icon && (
+                        <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-white dark:bg-zinc-800 text-lg border border-slate-200 dark:border-zinc-800 shadow-none">
+                          {item.icon}
+                        </span>
+                      )}
+                      <div className="min-w-0">
+                        <h4 className="text-sm font-bold text-slate-900 dark:text-slate-200 truncate">{item.name}</h4>
+                        {activeTab === 'accounts' && (
+                          <p className="text-xs font-semibold text-slate-455 dark:text-slate-500 mt-0.5 truncate capitalize">
+                            {item.type} • ${item.balance?.toFixed(2) || '0.00'}
+                          </p>
+                        )}
+                        {activeTab === 'categories' && (
+                          <p className="text-xs font-semibold text-slate-455 dark:text-slate-500 mt-0.5 capitalize">{item.type}</p>
+                        )}
+                        {activeTab === 'tags' && (
+                          <p className="text-xs font-semibold text-slate-455 dark:text-slate-500 mt-0.5">{item.usageCount || 0} uses</p>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="flex gap-1 flex-shrink-0">
+                      <button
+                        onClick={() => startEdit(item)}
+                        className="rounded-lg border border-slate-200 dark:border-zinc-800 px-2.5 py-2 text-xs font-bold text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-white dark:hover:bg-zinc-800 transition outline-none"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(item.id)}
+                        className="rounded-lg border border-slate-200 dark:border-zinc-800 px-2.5 py-2 text-xs font-bold text-slate-550 dark:text-slate-455 hover:text-rose-600 hover:bg-white dark:hover:bg-zinc-800 transition outline-none"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                ))}
+                {getItems().length === 0 && (
+                  <p className="col-span-2 text-center text-xs font-semibold text-slate-400 dark:text-slate-500 py-8">
+                    No {activeTab} defined yet. Create one on the left.
+                  </p>
+                )}
+              </div>
+            </div>
           </div>
-        </div>
-          </>
         )}
       </div>
     </div>
