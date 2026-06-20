@@ -6,7 +6,7 @@ import TransactionList from '../components/TransactionList';
 
 const Dashboard = ({ user, transactions, loading, onUpdate }) => {
   return (
-    <div className="space-y-6 pb-8 pt-6">
+    <div className="space-y-6 pb-8">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <p className="text-sm font-medium text-slate-500">Overview</p>

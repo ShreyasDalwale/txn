@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useBooks } from '../hooks/useBooks';
 import { useAccounts } from '../hooks/useAccounts';
@@ -9,6 +9,99 @@ import { addAccount, updateAccount, deleteAccount } from '../services/firebase/f
 import { addCategory, updateCategory, deleteCategory } from '../services/firebase/firestore/categories';
 import { addTag, updateTag, deleteTag } from '../services/firebase/firestore/tags';
 import './Settings.css';
+
+const ColorPicker = ({ value, onChange, defaultColor }) => {
+  const currentColor = value || defaultColor;
+  const [localText, setLocalText] = useState(currentColor);
+
+  // Sync local text when value changes from outside (preset or prop change)
+  useEffect(() => {
+    setLocalText(currentColor);
+  }, [currentColor]);
+
+  const presets = [
+    '#11998e', // Teal/Primary
+    '#10b981', // Emerald
+    '#0284c7', // Sky Blue
+    '#8b5cf6', // Violet
+    '#ec4899', // Pink
+    '#f43f5e', // Rose
+    '#f97316', // Orange
+    '#f59e0b', // Amber
+  ];
+
+  const handleTextChange = (val) => {
+    let formatted = val;
+    if (formatted && !formatted.startsWith('#')) {
+      formatted = '#' + formatted;
+    }
+    
+    if (/^#[0-9A-Fa-f]{0,6}$/.test(formatted)) {
+      setLocalText(formatted);
+      
+      if (/^#[0-9A-Fa-f]{6}$/.test(formatted)) {
+        onChange(formatted.toLowerCase());
+      } else if (/^#[0-9A-Fa-f]{3}$/.test(formatted)) {
+        const r = formatted[1];
+        const g = formatted[2];
+        const b = formatted[3];
+        onChange(`#${r}${r}${g}${g}${b}${b}`.toLowerCase());
+      }
+    }
+  };
+
+  const isValidHex = (color) => /^#[0-9A-Fa-f]{6}$/.test(color);
+  const nativeValue = isValidHex(currentColor) ? currentColor : defaultColor;
+
+  return (
+    <div className="color-picker-container">
+      <label className="color-picker-label">Color Theme</label>
+      <div className="color-presets">
+        {presets.map((preset) => (
+          <button
+            key={preset}
+            type="button"
+            className={`color-preset-btn ${currentColor.toLowerCase() === preset.toLowerCase() ? 'active' : ''}`}
+            style={{ backgroundColor: preset }}
+            onClick={() => {
+              onChange(preset);
+              setLocalText(preset);
+            }}
+            title={preset}
+          />
+        ))}
+      </div>
+      <div className="color-custom-row">
+        <div className="color-preview-wrapper" title="Choose custom color">
+          <input
+            type="color"
+            value={nativeValue}
+            onChange={(e) => {
+              const newColor = e.target.value;
+              onChange(newColor);
+              setLocalText(newColor);
+            }}
+            className="color-input-native"
+          />
+          <div className="color-preview-swatch" style={{ backgroundColor: currentColor }} />
+        </div>
+        <input
+          type="text"
+          value={localText}
+          onChange={(e) => handleTextChange(e.target.value)}
+          placeholder="#HEX"
+          className="color-input-text"
+        />
+      </div>
+    </div>
+  );
+};
+
+ColorPicker.propTypes = {
+  value: PropTypes.string,
+  onChange: PropTypes.func.isRequired,
+  defaultColor: PropTypes.string,
+};
 
 const Settings = ({ user, activeBookId, onActiveBookChange }) => {
   const [activeTab, setActiveTab] = useState('preference');
@@ -146,11 +239,10 @@ const Settings = ({ user, activeBookId, onActiveBookChange }) => {
             onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
             className="form-input"
           />
-          <input
-            type="color"
-            value={formData.color || '#00bcd4'}
-            onChange={(e) => setFormData({ ...formData, color: e.target.value })}
-            className="form-input"
+          <ColorPicker
+            value={formData.color}
+            onChange={(color) => setFormData({ ...formData, color })}
+            defaultColor="#00bcd4"
           />
         </>
       );
@@ -197,11 +289,10 @@ const Settings = ({ user, activeBookId, onActiveBookChange }) => {
             onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
             className="form-input"
           />
-          <input
-            type="color"
-            value={formData.color || '#00e676'}
-            onChange={(e) => setFormData({ ...formData, color: e.target.value })}
-            className="form-input"
+          <ColorPicker
+            value={formData.color}
+            onChange={(color) => setFormData({ ...formData, color })}
+            defaultColor="#00e676"
           />
         </>
       );
@@ -231,11 +322,10 @@ const Settings = ({ user, activeBookId, onActiveBookChange }) => {
             onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
             className="form-input"
           />
-          <input
-            type="color"
-            value={formData.color || '#e91e63'}
-            onChange={(e) => setFormData({ ...formData, color: e.target.value })}
-            className="form-input"
+          <ColorPicker
+            value={formData.color}
+            onChange={(color) => setFormData({ ...formData, color })}
+            defaultColor="#e91e63"
           />
         </>
       );
@@ -256,11 +346,10 @@ const Settings = ({ user, activeBookId, onActiveBookChange }) => {
             onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
             className="form-input"
           />
-          <input
-            type="color"
-            value={formData.color || '#9c27b0'}
-            onChange={(e) => setFormData({ ...formData, color: e.target.value })}
-            className="form-input"
+          <ColorPicker
+            value={formData.color}
+            onChange={(color) => setFormData({ ...formData, color })}
+            defaultColor="#9c27b0"
           />
         </>
       );

@@ -14,7 +14,7 @@ const AddTransaction = ({ user, onTransactionAdded }) => {
   };
 
   return (
-    <div className="space-y-4 pb-8 pt-6">
+    <div className="space-y-4 pb-8">
       <div>
         <button
           onClick={() => navigate('/')}
