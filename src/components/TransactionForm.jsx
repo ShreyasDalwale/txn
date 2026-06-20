@@ -4,44 +4,42 @@ import { addTxn } from '../services/firebase/firebase';
 import { useCategories } from '../hooks/useCategories';
 import { useBooks } from '../hooks/useBooks';
 import { useAccounts } from '../hooks/useAccounts';
-import './TransactionForm.css';
 
 const TransactionForm = ({ user, onTransactionAdded }) => {
+  const now = new Date();
+  const initialDateTime = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(
+    now.getDate()
+  ).padStart(2, '0')}T${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+
   const [formData, setFormData] = useState({
     amount: '',
     type: 'expense',
     category: '',
     description: '',
-    date: new Date().toISOString().split('T')[0],
+    date: initialDateTime,
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [showCategoryGrid, setShowCategoryGrid] = useState(false);
-  const [categorySearchText, setCategorySearchText] = useState('');
-  
+
   const amountRef = useRef(null);
   const categoryRef = useRef(null);
-  const dateRef = useRef(null);
 
-  // Fetch categories, books, and accounts
   const { categories, loading: categoriesLoading } = useCategories(user?.uid, formData.type);
   const { books } = useBooks(user?.uid);
-  const defaultBook = books?.find(b => b.isDefault) || books?.[0];
+  const defaultBook = books?.find((b) => b.isDefault) || books?.[0];
   const { accounts } = useAccounts(user?.uid, defaultBook?.id);
-  const defaultAccount = accounts?.find(a => a.isDefault) || accounts?.[0];
+  const defaultAccount = accounts?.find((a) => a.isDefault) || accounts?.[0];
 
-  // Set first category when categories load
   useEffect(() => {
     if (categories && categories.length > 0 && !formData.category) {
-      // Only set parent categories (level 0)
-      const parentCategories = categories.filter(c => c.level === 0);
+      const parentCategories = categories.filter((c) => c.level === 0);
       if (parentCategories.length > 0) {
         setFormData((prev) => ({ ...prev, category: parentCategories[0].id }));
       }
     }
   }, [categories, formData.category]);
 
-  // Auto-focus amount when type changes
   useEffect(() => {
     if (amountRef.current) {
       amountRef.current.focus();
@@ -64,13 +62,12 @@ const TransactionForm = ({ user, onTransactionAdded }) => {
 
     try {
       setLoading(true);
-      
-      // Validate that we have a book and account
+
       if (!defaultBook || !defaultAccount) {
         setError('Please set up a book and account in Settings first');
         return;
       }
-      
+
       await addTxn({
         amount: parseFloat(formData.amount),
         type: formData.type,
@@ -82,14 +79,18 @@ const TransactionForm = ({ user, onTransactionAdded }) => {
         accountId: defaultAccount.id,
       });
 
+      const nextDateTime = `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}-${String(
+        new Date().getDate()
+      ).padStart(2, '0')}T${String(new Date().getHours()).padStart(2, '0')}:${String(new Date().getMinutes()).padStart(2, '0')}`;
+
       setFormData({
         amount: '',
         type: 'expense',
-        category: categories?.filter(c => c.level === 0)?.[0]?.id || '',
+        category: categories?.filter((c) => c.level === 0)?.[0]?.id || '',
         description: '',
-        date: new Date().toISOString().split('T')[0],
+        date: nextDateTime,
       });
-      
+
       setShowCategoryGrid(false);
 
       if (onTransactionAdded) {
@@ -110,199 +111,165 @@ const TransactionForm = ({ user, onTransactionAdded }) => {
 
   const handleTypeToggle = (type) => {
     setFormData((prev) => ({ ...prev, type }));
-    // Category will be updated by useEffect when categories load
-  };
-
-  const handleAmountKeyDown = (e) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      categoryRef.current?.focus();
-    }
   };
 
   const handleCategorySelect = (categoryValue) => {
     setFormData((prev) => ({ ...prev, category: categoryValue }));
     setShowCategoryGrid(false);
-    setCategorySearchText('');
   };
 
-  const handleCategoryKeyDown = (e) => {
-    // Open/close with Enter or Space
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      if (showCategoryGrid) {
-        setShowCategoryGrid(false);
-        dateRef.current?.focus();
-      } else {
-        setShowCategoryGrid(true);
-      }
-      return;
-    }
-    
-    // Close with Escape
-    if (e.key === 'Escape') {
-      setShowCategoryGrid(false);
-      setCategorySearchText('');
-      return;
-    }
-    
-    // Handle backspace
-    if (e.key === 'Backspace') {
-      e.preventDefault();
-      setCategorySearchText('');
-      return;
-    }
-    
-    // Handle letter typing
-    if (e.key.length === 1 && /[a-zA-Z]/.test(e.key)) {
-      e.preventDefault();
-      const newSearchText = categorySearchText + e.key.toLowerCase();
-      setCategorySearchText(newSearchText);
-      
-      // Find matching category
-      const matchedCategory = filteredCategories.find((cat) => 
-        cat.name.toLowerCase().includes(newSearchText)
-      );
-      
-      if (matchedCategory) {
-        setFormData((prev) => ({ ...prev, category: matchedCategory.id }));
-        setShowCategoryGrid(true);
-      }
-    }
-  };
-
-  // Filter to only parent categories (level 0)
-  const filteredCategories = categories?.filter(c => c.level === 0) || [];
-
-  // Get selected category object
-  const selectedCategory = categories?.find(c => c.id === formData.category);
+  const filteredCategories = categories?.filter((c) => c.level === 0) || [];
+  const selectedCategory = categories?.find((c) => c.id === formData.category);
 
   return (
-    <div className="transaction-form-container">
-      <h2 className="form-title">Add New Transaction</h2>
-      
-      {error && <div className="error-message">{error}</div>}
-      
-      <form onSubmit={handleSubmit} className="transaction-form">
-        {/* Date */}
-        <div className="form-group">
-          <label htmlFor="date">Date</label>
-          <input
-            ref={dateRef}
-            type="date"
-            id="date"
-            name="date"
-            value={formData.date}
-            onChange={handleChange}
-            className="form-input"
-            required
-          />
-        </div>
+    <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div className="mb-6">
+        <p className="text-sm font-medium text-slate-500">Record</p>
+        <h2 className="text-2xl font-semibold text-slate-900">Add New Transaction</h2>
+      </div>
 
-        {/* Type Toggle */}
-        <div className="form-group no-underline">
-          <label>Type</label>
-          <div className="type-toggle">
-            <button
-              type="button"
-              className={`toggle-btn ${formData.type === 'income' ? 'active income' : ''}`}
-              onClick={() => handleTypeToggle('income')}
-            >
-              Income
-            </button>
-            <button
-              type="button"
-              className={`toggle-btn ${formData.type === 'expense' ? 'active expense' : ''}`}
-              onClick={() => handleTypeToggle('expense')}
-            >
-              Expense
-            </button>
+      {error && (
+        <div className="mb-4 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+          {error}
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div>
+            <label htmlFor="date" className="mb-1.5 block text-sm font-medium text-slate-700">
+              Date & Time
+            </label>
+            <input
+              type="datetime-local"
+              id="date"
+              name="date"
+              value={formData.date}
+              onChange={handleChange}
+              className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none ring-0 focus:border-slate-900"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="mb-1.5 block text-sm font-medium text-slate-700">Type</label>
+            <div className="grid grid-cols-2 gap-2 rounded-2xl bg-slate-50 p-1">
+              <button
+                type="button"
+                className={`rounded-2xl px-3 py-2.5 text-sm font-medium transition ${
+                  formData.type === 'income'
+                    ? 'bg-emerald-500 text-white'
+                    : 'text-slate-600 hover:bg-white'
+                }`}
+                onClick={() => handleTypeToggle('income')}
+              >
+                Income
+              </button>
+              <button
+                type="button"
+                className={`rounded-2xl px-3 py-2.5 text-sm font-medium transition ${
+                  formData.type === 'expense'
+                    ? 'bg-rose-500 text-white'
+                    : 'text-slate-600 hover:bg-white'
+                }`}
+                onClick={() => handleTypeToggle('expense')}
+              >
+                Expense
+              </button>
+            </div>
           </div>
         </div>
 
-        {/* Amount */}
-        <div className="form-group">
-          <label htmlFor="amount">Amount ($)</label>
-          <input
-            ref={amountRef}
-            type="number"
-            id="amount"
-            name="amount"
-            value={formData.amount}
-            onChange={handleChange}
-            onKeyDown={handleAmountKeyDown}
-            placeholder="0.00"
-            step="0.01"
-            min="0"
-            className="form-input"
-            required
-          />
+        <div>
+          <label htmlFor="amount" className="mb-1.5 block text-sm font-medium text-slate-700">
+            Amount
+          </label>
+          <div className="relative">
+            <span className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">$</span>
+            <input
+              ref={amountRef}
+              type="number"
+              id="amount"
+              name="amount"
+              value={formData.amount}
+              onChange={handleChange}
+              placeholder="0.00"
+              step="0.01"
+              min="0"
+              className="w-full rounded-2xl border border-slate-200 bg-white pl-9 pr-4 py-3 text-sm text-slate-900 outline-none ring-0 focus:border-slate-900"
+              required
+            />
+          </div>
         </div>
 
-        {/* Category Grid */}
-        <div className="form-group">
-          <label>Category</label>
-          <button
-            type="button"
-            ref={categoryRef}
-            className="category-display"
-            onClick={() => setShowCategoryGrid(!showCategoryGrid)}
-            onFocus={() => setShowCategoryGrid(true)}
-            onBlur={() => {
-              // Delay to allow clicks on chips to register
-              setTimeout(() => setShowCategoryGrid(false), 200);
-            }}
-            onKeyDown={handleCategoryKeyDown}
-          >
-            {selectedCategory?.name || 'Select Category'}
-          </button>
-          
-          {showCategoryGrid && (
-            <div className="category-grid">
-              {categoriesLoading ? (
-                <div className="loading-categories">Loading categories...</div>
-              ) : filteredCategories.length > 0 ? (
-                filteredCategories.map((cat) => (
-                  <button
-                    key={cat.id}
-                    type="button"
-                    tabIndex="-1"
-                    className={`category-chip ${formData.category === cat.id ? 'selected' : ''}`}
-                    onClick={() => handleCategorySelect(cat.id)}
-                    style={{ '--category-color': cat.color }}
-                  >
-                    {cat.icon && <span className="category-icon">{cat.icon}</span>}
-                    {cat.name}
-                  </button>
-                ))
-              ) : (
-                <div className="no-categories">
-                  No categories found. <a href="/settings">Add categories in Settings</a>
-                </div>
-              )}
-            </div>
-          )}
+        <div>
+          <label className="mb-1.5 block text-sm font-medium text-slate-700">Category</label>
+          <div className="relative">
+            <button
+              type="button"
+              ref={categoryRef}
+              onClick={() => setShowCategoryGrid((prev) => !prev)}
+              className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-left text-sm text-slate-900 outline-none focus:border-slate-900"
+            >
+              {selectedCategory?.name || 'Select category'}
+            </button>
+
+            {showCategoryGrid && (
+              <div className="absolute z-10 mt-2 w-full rounded-2xl border border-slate-200 bg-white p-3 shadow-lg">
+                {categoriesLoading ? (
+                  <p className="px-2 py-3 text-sm text-slate-500">Loading categories...</p>
+                ) : filteredCategories.length > 0 ? (
+                  <div className="grid grid-cols-2 gap-2">
+                    {filteredCategories.map((cat) => (
+                      <button
+                        key={cat.id}
+                        type="button"
+                        onClick={() => handleCategorySelect(cat.id)}
+                        className={`flex items-center gap-2 rounded-2xl px-3 py-2 text-sm transition ${
+                          formData.category === cat.id
+                            ? 'bg-slate-900 text-white'
+                            : 'bg-slate-50 text-slate-700 hover:bg-slate-100'
+                        }`}
+                      >
+                        {cat.icon && <span>{cat.icon}</span>}
+                        <span>{cat.name}</span>
+                      </button>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="px-2 py-3 text-sm text-slate-500">
+                    No categories found. Add some in settings.
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
         </div>
 
-        {/* Description */}
-        <div className="form-group">
-          <label htmlFor="description">Description</label>
+        <div>
+          <label htmlFor="description" className="mb-1.5 block text-sm font-medium text-slate-700">
+            Description
+          </label>
           <input
             type="text"
             id="description"
             name="description"
             value={formData.description}
             onChange={handleChange}
-            placeholder="Optional..."
-            className="form-input"
+            placeholder="Optional notes"
+            className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 outline-none ring-0 focus:border-slate-900"
           />
         </div>
 
-        <button type="submit" className="btn-submit" disabled={loading || !user}>
-          {loading ? 'Adding...' : 'Add Transaction'}
+        <button
+          type="submit"
+          disabled={loading || !user}
+          className="w-full rounded-2xl bg-slate-900 px-4 py-3.5 text-sm font-semibold text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          {loading ? 'Adding transaction...' : 'Add Transaction'}
         </button>
       </form>
-    </div>
+    </section>
   );
 };
 
