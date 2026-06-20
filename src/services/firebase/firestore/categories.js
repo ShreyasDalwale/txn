@@ -47,12 +47,14 @@ export const getCategoriesByType = async (userId, type) => {
   const snapshot = await getDocs(categoriesRef);
   
   let categories = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+  const normalizedType = type?.toLowerCase();
   
   // Filter and sort in JavaScript
-  categories = categories.filter(cat => 
-    cat.isActive !== false && 
-    (cat.type === type || cat.type === 'both')
-  );
+  categories = categories.filter(cat => {
+    if (cat.isActive === false) return false;
+    const catType = typeof cat.type === 'string' ? cat.type.toLowerCase() : '';
+    return !catType || catType === normalizedType || catType === 'both';
+  });
   categories.sort((a, b) => {
     if (a.level !== b.level) return (a.level || 0) - (b.level || 0);
     return (a.order || 0) - (b.order || 0);

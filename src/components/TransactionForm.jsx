@@ -25,17 +25,20 @@ const TransactionForm = ({ user, onTransactionAdded }) => {
   const amountRef = useRef(null);
   const categoryRef = useRef(null);
 
-  const { categories, loading: categoriesLoading } = useCategories(user?.uid, formData.type);
+  const { categories, loading: categoriesLoading } = useCategories(user?.uid);
   const { books } = useBooks(user?.uid);
   const defaultBook = books?.find((b) => b.isDefault) || books?.[0];
   const { accounts } = useAccounts(user?.uid, defaultBook?.id);
   const defaultAccount = accounts?.find((a) => a.isDefault) || accounts?.[0];
 
   useEffect(() => {
-    if (categories && categories.length > 0 && !formData.category) {
-      const parentCategories = categories.filter((c) => c.level === 0);
-      if (parentCategories.length > 0) {
-        setFormData((prev) => ({ ...prev, category: parentCategories[0].id }));
+    if (!categories || categories.length === 0) return;
+
+    const validCategory = categories.find((cat) => cat.id === formData.category);
+    if (!formData.category || !validCategory) {
+      const firstCategory = categories[0];
+      if (firstCategory) {
+        setFormData((prev) => ({ ...prev, category: firstCategory.id }));
       }
     }
   }, [categories, formData.category]);
@@ -118,8 +121,9 @@ const TransactionForm = ({ user, onTransactionAdded }) => {
     setShowCategoryGrid(false);
   };
 
-  const filteredCategories = categories?.filter((c) => c.level === 0) || [];
-  const selectedCategory = categories?.find((c) => c.id === formData.category);
+  const visibleCategories = categories?.filter((cat) => cat.isActive !== false) || [];
+  const selectedCategory =
+    visibleCategories.find((c) => c.id === formData.category) || visibleCategories[0] || null;
 
   return (
     <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
@@ -218,9 +222,9 @@ const TransactionForm = ({ user, onTransactionAdded }) => {
               <div className="absolute z-10 mt-2 w-full rounded-2xl border border-slate-200 bg-white p-3 shadow-lg">
                 {categoriesLoading ? (
                   <p className="px-2 py-3 text-sm text-slate-500">Loading categories...</p>
-                ) : filteredCategories.length > 0 ? (
+                ) : visibleCategories.length > 0 ? (
                   <div className="grid grid-cols-2 gap-2">
-                    {filteredCategories.map((cat) => (
+                    {visibleCategories.map((cat) => (
                       <button
                         key={cat.id}
                         type="button"
