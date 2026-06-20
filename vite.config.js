@@ -14,9 +14,9 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['vite.svg'],
+      includeAssets: ['logo.png'],
       manifest: {
-        name: 'Txn Expense Tracker',
+        name: 'Txn - Expense Tracker',
         short_name: 'Txn',
         description: 'Track your income and expenses effortlessly.',
         theme_color: '#0f172a',
@@ -26,15 +26,15 @@ export default defineConfig({
         scope: '/',
         icons: [
           {
-            src: '/vite.svg',
+            src: '/logo.png',
             sizes: '192x192',
-            type: 'image/svg+xml',
+            type: 'image/png',
             purpose: 'any maskable',
           },
           {
-            src: '/vite.svg',
+            src: '/logo.png',
             sizes: '512x512',
-            type: 'image/svg+xml',
+            type: 'image/png',
             purpose: 'any maskable',
           },
         ],
