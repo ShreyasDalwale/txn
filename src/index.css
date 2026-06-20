@@ -1,70 +1,13 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;500;600&family=JetBrains+Mono:wght@300;400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 @import "tailwindcss";
 
 @layer base {
   :root {
-    /* Cyberpunk Neon Colors */
-    --neon-cyan: #00bcd4;
-    --neon-pink: #e91e63;
-    --neon-green: #00e676;
-    --neon-blue: #2196f3;
-    --neon-purple: #9c27b0;
-    --neon-yellow: #ffc107;
-    
-    /* Core Colors */
-    --primary: var(--neon-cyan);
-    --secondary: var(--neon-green);
-    --accent: var(--neon-pink);
-    --white: #ffffff;
-    --gray: #808080;
-    --black: #000000;
-    --dark-bg: #0a0a0a;
-    --card-bg: #121212;
-    --error: #f44336;
-    --success: var(--neon-green);
-    --warning: var(--neon-yellow);
-    
-    /* Opacity variations */
-    --primary-10: rgba(0, 188, 212, 0.1);
-    --primary-20: rgba(0, 188, 212, 0.2);
-    --primary-30: rgba(0, 188, 212, 0.3);
-    --secondary-10: rgba(0, 230, 118, 0.1);
-    --secondary-20: rgba(0, 230, 118, 0.2);
-    --accent-10: rgba(233, 30, 99, 0.1);
-    --accent-20: rgba(233, 30, 99, 0.2);
-    --white-05: rgba(255, 255, 255, 0.05);
-    --white-10: rgba(255, 255, 255, 0.1);
-    --white-20: rgba(255, 255, 255, 0.2);
-    --white-30: rgba(255, 255, 255, 0.3);
-    --white-50: rgba(255, 255, 255, 0.5);
-    --white-70: rgba(255, 255, 255, 0.7);
-    --white-90: rgba(255, 255, 255, 0.9);
-    --error-20: rgba(244, 67, 54, 0.2);
-    
-    /* Border Radius */
-    --radius-button: 8px;
-    --radius-input: 0;
-    --radius-card: 10px;
-    --radius-dialog: 30px;
-    --radius-icon: 0;
-    --radius-avatar: 30%;
-    --radius-dropdown: 0;
-    
-    /* Neon Glow Effects */
-    --glow-cyan: 0 0 10px var(--neon-cyan), 0 0 20px var(--neon-cyan), 0 0 30px var(--neon-cyan);
-    --glow-green: 0 0 10px var(--neon-green), 0 0 20px var(--neon-green), 0 0 30px var(--neon-green);
-    --glow-pink: 0 0 10px var(--neon-pink), 0 0 20px var(--neon-pink), 0 0 30px var(--neon-pink);
-    --glow-subtle-cyan: 0 0 5px var(--primary-20), 0 0 10px var(--primary-10);
-    --glow-subtle-green: 0 0 5px var(--secondary-20), 0 0 10px var(--secondary-10);
-    
-    font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     line-height: 1.5;
     font-weight: 400;
-
-    color-scheme: dark;
-    color: var(--white-90);
-    background-color: var(--black);
-
+    color: #0f172a;
+    background-color: #f8fafc;
     font-synthesis: none;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
@@ -77,45 +20,22 @@
 
   body {
     margin: 0;
-    padding: 0;
     min-height: 100vh;
-    background: var(--black);
-    background-attachment: fixed;
-    letter-spacing: 0.3px;
+    background: #f8fafc;
   }
 
   #root {
     min-height: 100vh;
   }
 
-  h1, h2, h3, h4, h5, h6 {
-    line-height: 1.2;
-  }
-
   button {
-    font-family: inherit;
+    font: inherit;
     cursor: pointer;
   }
 
-  input, select, textarea {
-    font-family: inherit;
-  }
-
-  /* Scrollbar styling */
-  ::-webkit-scrollbar {
-    width: 8px;
-  }
-
-  ::-webkit-scrollbar-track {
-    background: var(--dark-bg);
-  }
-
-  ::-webkit-scrollbar-thumb {
-    background: var(--primary);
-    border-radius: 0;
-  }
-
-  ::-webkit-scrollbar-thumb:hover {
-    background: var(--secondary);
+  input,
+  select,
+  textarea {
+    font: inherit;
   }
 }
