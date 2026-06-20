@@ -14,7 +14,7 @@ export default defineConfig({
     tailwindcss(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['logo.png'],
+      includeAssets: ['vite.svg','logo.svg'],
       manifest: {
         name: 'Txn - Expense Tracker',
         short_name: 'Txn',
@@ -26,15 +26,15 @@ export default defineConfig({
         scope: '/',
         icons: [
           {
-            src: '/logo.png',
+            src: '/logo.svg',
             sizes: '192x192',
-            type: 'image/png',
+            type: 'image/svg+xml',
             purpose: 'any maskable',
           },
           {
-            src: '/logo.png',
+            src: '/logo.svg',
             sizes: '512x512',
-            type: 'image/png',
+            type: 'image/svg+xml',
             purpose: 'any maskable',
           },
         ],
