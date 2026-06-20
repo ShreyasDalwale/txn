@@ -3,6 +3,32 @@
   background: var(--black);
 }
 
+.pwa-update-banner {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: var(--primary);
+  color: var(--black);
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-card);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  font-weight: 600;
+}
+
+.pwa-update-banner button {
+  background: var(--black);
+  color: var(--white);
+  border: none;
+  border-radius: 999px;
+  padding: 0.5rem 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
 .main-content {
   max-width: 1200px;
   margin: 0 auto;

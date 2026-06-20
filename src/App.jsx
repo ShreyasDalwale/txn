@@ -17,6 +17,7 @@ const App = () => {
   const { user, loading: authLoading } = useAuth();
   const { transactions, loading: transLoading, refetch } = useTransactions(user?.uid);
   const { books } = useBooks(user?.uid);
+  const [showUpdateBanner, setShowUpdateBanner] = useState(false);
   
   // Get active book from localStorage or use default
   const [activeBookId, setActiveBookId] = useState(() => {
@@ -32,6 +33,28 @@ const App = () => {
     }
   }, [activeBook?.id]);
 
+  useEffect(() => {
+    const handleUpdateNeeded = () => {
+      setShowUpdateBanner(true);
+    };
+
+    window.addEventListener('pwa-update-needed', handleUpdateNeeded);
+
+    return () => {
+      window.removeEventListener('pwa-update-needed', handleUpdateNeeded);
+    };
+  }, []);
+
+  const handleUpdate = () => {
+    if (window.__updateSW) {
+      window.__updateSW();
+    } else {
+      window.location.reload();
+    }
+
+    setShowUpdateBanner(false);
+  };
+
   if (authLoading) {
     return (
       <div className="App">
@@ -46,6 +69,14 @@ const App = () => {
   return (
     <Router>
       <div className="App">
+        {showUpdateBanner && (
+          <div className="pwa-update-banner">
+            <span>New version available</span>
+            <button type="button" onClick={handleUpdate}>
+              Update now
+            </button>
+          </div>
+        )}
         {user && <Sidebar activeBook={activeBook} />}
         <Header user={user} />
         
