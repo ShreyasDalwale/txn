@@ -277,7 +277,7 @@ export const DashboardInsights = ({ transactions, userId }) => {
                   {elapsedDays} / {daysInMonth} Days ({daysProgress.toFixed(0)}%)
                 </span>
               </div>
-              <div className="w-full h-2 bg-slate-100 dark:bg-zinc-850 rounded-full overflow-hidden">
+              <div className="w-full h-2 bg-slate-100 dark:bg-zinc-800 rounded-full overflow-hidden">
                 <div 
                   className="h-full rounded-full bg-slate-900 dark:bg-zinc-100 transition-all duration-300"
                   style={{ width: `${daysProgress}%` }}

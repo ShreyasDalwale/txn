@@ -10,14 +10,13 @@ const Transactions = ({ user, transactions, loading, onUpdate, onEditClick }) =>
         <h1 className="text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white mt-0.5">Transactions</h1>
       </div>
 
-      {/* Shared Transaction List Component */}
+      {/* Transaction List */}
       <TransactionList
         userId={user?.uid}
         transactions={transactions}
         loading={loading}
         onUpdate={onUpdate}
         onEditClick={onEditClick}
-        title="All Transactions"
       />
     </div>
   );
