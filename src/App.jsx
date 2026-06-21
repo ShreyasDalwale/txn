@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
-import { SlChart, SlGraph, SlWallet, SlPlus } from 'react-icons/sl';
+import { SlChart, SlGraph, SlWallet } from 'react-icons/sl';
 import Sidebar from './components/Sidebar';
 import BottomNav from './components/BottomNav';
 import Dashboard from './pages/Dashboard';
@@ -22,14 +22,6 @@ const AppContent = () => {
   const [editingTransaction, setEditingTransaction] = useState(null);
 
   const isAddTxnPage = location.pathname === '/add-transaction';
-
-  useEffect(() => {
-    if (user) {
-      if (window.innerWidth >= 768) {
-        setIsAdding(true);
-      }
-    }
-  }, [user]);
 
   useEffect(() => {
     const handleUpdateNeeded = () => {
@@ -79,7 +71,7 @@ const AppContent = () => {
   if (authLoading) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center gap-3 bg-slate-50 dark:bg-black">
-        <div className="h-12 w-12 animate-spin rounded-full border-4 border-slate-200 border-t-brand-teal"></div>
+        <div className="h-12 w-12 animate-spin rounded-full border-4 border-slate-200 dark:border-zinc-800 border-t-slate-900 dark:border-t-white"></div>
         <p className="text-sm font-medium text-slate-500 dark:text-slate-400">Loading your wallet...</p>
       </div>
     );
@@ -101,10 +93,7 @@ const AppContent = () => {
       )}
 
       {user && (
-        <Sidebar
-          user={user}
-          onAddClick={handleAddClick}
-        />
+        <Sidebar user={user} />
       )}
 
       <div className="flex-1 flex flex-col md:pl-72 min-h-screen relative z-10">
@@ -232,7 +221,9 @@ const AppContent = () => {
             className="md:hidden fixed bottom-20 right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-slate-900 hover:bg-slate-850 dark:bg-slate-100 dark:hover:bg-white text-white dark:text-slate-900 shadow-lg transition-all duration-150 active:scale-95 active:rotate-90 outline-none"
             aria-label="Add transaction"
           >
-            <SlPlus className="text-xl font-bold" />
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+            </svg>
           </button>
         )}
 
@@ -245,6 +236,38 @@ const AppContent = () => {
 };
 
 const App = () => {
+  useEffect(() => {
+    // Initialize theme on mount
+    const savedTheme = localStorage.getItem('theme');
+    const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const isDark = savedTheme === 'dark' || (!savedTheme && systemPrefersDark);
+    if (isDark) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+
+    // Toggle theme on Alt + T
+    const handleKeyDown = (e) => {
+      if (e.altKey && e.key.toLowerCase() === 't') {
+        e.preventDefault();
+        const currentDark = document.documentElement.classList.contains('dark');
+        const nextDark = !currentDark;
+        if (nextDark) {
+          document.documentElement.classList.add('dark');
+          localStorage.setItem('theme', 'dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+          localStorage.setItem('theme', 'light');
+        }
+        window.dispatchEvent(new CustomEvent('theme-changed', { detail: { isDark: nextDark } }));
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
   return (
     <Router>
       <AppContent />

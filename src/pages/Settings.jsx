@@ -6,6 +6,26 @@ import { useTags } from '../hooks/useTags';
 import { addAccount, updateAccount, deleteAccount } from '../services/firebase/firestore/accounts';
 import { addCategory, updateCategory, deleteCategory } from '../services/firebase/firestore/categories';
 import { addTag, updateTag, deleteTag } from '../services/firebase/firestore/tags';
+import CustomSelect from '../components/CustomSelect';
+
+const accountTypeOptions = [
+  { value: 'bank', label: 'Bank Account' },
+  { value: 'cash', label: 'Cash' },
+  { value: 'credit_card', label: 'Credit Card' },
+  { value: 'digital_wallet', label: 'Digital Wallet' },
+];
+
+const categoryTypeOptions = [
+  { value: 'expense', label: 'Expense' },
+  { value: 'income', label: 'Income' },
+  { value: 'both', label: 'Both' },
+];
+
+const budgetTypeOptions = [
+  { value: 'need', label: 'Need' },
+  { value: 'want', label: 'Want' },
+  { value: 'investment', label: 'Investment' },
+];
 
 const ColorPicker = ({ value, onChange, defaultColor }) => {
   const currentColor = value || defaultColor;
@@ -17,7 +37,7 @@ const ColorPicker = ({ value, onChange, defaultColor }) => {
   }, [currentColor]);
 
   const presets = [
-    '#11998e', // Teal/Primary
+    '#64748b', // Slate/Primary
     '#10b981', // Emerald
     '#0284c7', // Sky Blue
     '#8b5cf6', // Violet
@@ -227,16 +247,11 @@ const Settings = ({ user }) => {
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
             className={inputClasses}
           />
-          <select
+          <CustomSelect
             value={formData.type || 'bank'}
-            onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-            className={inputClasses}
-          >
-            <option value="bank">Bank Account</option>
-            <option value="cash">Cash</option>
-            <option value="credit_card">Credit Card</option>
-            <option value="digital_wallet">Digital Wallet</option>
-          </select>
+            onChange={(val) => setFormData({ ...formData, type: val })}
+            options={accountTypeOptions}
+          />
           <input
             type="number"
             placeholder="Initial Balance"
@@ -269,30 +284,22 @@ const Settings = ({ user }) => {
             onChange={(e) => setFormData({ ...formData, name: e.target.value })}
             className={inputClasses}
           />
-          <select
+          <CustomSelect
             value={formData.type || 'expense'}
-            onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-            className={inputClasses}
-          >
-            <option value="expense">Expense</option>
-            <option value="income">Income</option>
-            <option value="both">Both</option>
-          </select>
+            onChange={(val) => setFormData({ ...formData, type: val })}
+            options={categoryTypeOptions}
+          />
           {(formData.type !== 'income') && (
             <div>
               <label htmlFor="budgetType" className="mb-2 block text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">
                 Category Type
               </label>
-              <select
+              <CustomSelect
                 id="budgetType"
                 value={formData.budgetType || 'need'}
-                onChange={(e) => setFormData({ ...formData, budgetType: e.target.value })}
-                className={inputClasses}
-              >
-                <option value="need">Need</option>
-                <option value="want">Want</option>
-                <option value="investment">Investment</option>
-              </select>
+                onChange={(val) => setFormData({ ...formData, budgetType: val })}
+                options={budgetTypeOptions}
+              />
             </div>
           )}
           <input

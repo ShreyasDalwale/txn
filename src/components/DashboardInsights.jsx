@@ -328,7 +328,7 @@ export const DashboardInsights = ({ transactions, userId }) => {
         <div className="mt-5 space-y-3.5">
           {insights.map((insight) => {
             const Icon = insight.icon;
-            let toneClasses = 'bg-teal-50 dark:bg-teal-950/20 text-teal-600 dark:text-teal-400 border-teal-100 dark:border-teal-900/10';
+            let toneClasses = 'bg-slate-50 dark:bg-zinc-900/40 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-zinc-800/80';
             if (insight.tone === 'rose') {
               toneClasses = 'bg-rose-50 dark:bg-rose-950/20 text-rose-600 dark:text-rose-400 border-rose-100 dark:border-rose-900/10';
             } else if (insight.tone === 'emerald') {

@@ -37,6 +37,15 @@ const UserAvatar = ({ user }) => {
     }
   }, []);
 
+  // Listen for global theme toggle events
+  useEffect(() => {
+    const handleThemeChange = (e) => {
+      setDarkMode(e.detail.isDark);
+    };
+    window.addEventListener('theme-changed', handleThemeChange);
+    return () => window.removeEventListener('theme-changed', handleThemeChange);
+  }, []);
+
   // Sync state changes with localStorage and root element
   useEffect(() => {
     if (darkMode) {

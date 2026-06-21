@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { addTxn, updateTxn } from '../services/firebase/firebase';
 import { useCategories } from '../hooks/useCategories';
 import { useAccounts } from '../hooks/useAccounts';
-import { SlClose } from 'react-icons/sl';
+import CustomSelect from './CustomSelect';
 
 const TransactionForm = ({ user, transactionToEdit, onTransactionAdded, onClose }) => {
   const [formData, setFormData] = useState({
@@ -181,6 +181,13 @@ const TransactionForm = ({ user, transactionToEdit, onTransactionAdded, onClose 
   const typedCategories = visibleCategories.filter((cat) => cat.type === formData.type || cat.type === 'both');
   const selectedCategory = visibleCategories.find((c) => c.id === formData.category) || typedCategories[0] || null;
 
+  const accountOptions = (accounts || []).map((acc) => ({
+    value: acc.id,
+    label: acc.name,
+    icon: acc.icon || '💳',
+    subLabel: `$${acc.balance?.toFixed(2) || '0.00'}`,
+  }));
+
   return (
     <div className="flex flex-col h-full bg-transparent">
       {/* Spacer to push content to bottom on mobile */}
@@ -200,7 +207,9 @@ const TransactionForm = ({ user, transactionToEdit, onTransactionAdded, onClose 
             className="rounded-xl border border-slate-200 dark:border-zinc-800 p-2 text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-zinc-900 transition-all outline-none"
             aria-label="Close form"
           >
-            <SlClose className="text-sm font-bold" />
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
           </button>
         )}
       </div>
@@ -289,21 +298,13 @@ const TransactionForm = ({ user, transactionToEdit, onTransactionAdded, onClose 
           {accountsLoading ? (
             <div className="h-11 w-full animate-pulse rounded-2xl bg-slate-100 dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800" />
           ) : accounts.length > 0 ? (
-            <select
+            <CustomSelect
               id="accountId"
-              name="accountId"
               value={formData.accountId}
-              onChange={handleChange}
-              className="w-full rounded-2xl glow-focus px-4 py-3 text-sm text-slate-900 dark:text-slate-100 bg-white dark:bg-zinc-950 transition-all duration-150"
-              required
-            >
-              <option value="" disabled>Select an account</option>
-              {accounts.map((acc) => (
-                <option key={acc.id} value={acc.id}>
-                  {acc.icon || '💳'} {acc.name} (${acc.balance?.toFixed(2) || '0.00'})
-                </option>
-              ))}
-            </select>
+              onChange={(val) => setFormData({ ...formData, accountId: val })}
+              options={accountOptions}
+              placeholder="Select an account"
+            />
           ) : (
             <div className="text-xs font-bold text-rose-600 dark:text-rose-400 bg-rose-50 dark:bg-rose-900/10 border border-rose-200 dark:border-rose-900/20 rounded-2xl px-4 py-3.5">
               Please set up an account in Settings first.

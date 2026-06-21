@@ -4,7 +4,6 @@ import Stats from '../components/Stats';
 import TransactionList from '../components/TransactionList';
 import { TrendChart, CategoryBreakdownDonut } from '../components/DashboardCharts';
 import { DashboardInsights } from '../components/DashboardInsights';
-import { SlPlus } from 'react-icons/sl';
 
 const Dashboard = ({ user, transactions, loading, onUpdate, onAddClick, onEditClick }) => {
   const [timeframe, setTimeframe] = useState('this_month');
@@ -99,7 +98,9 @@ const Dashboard = ({ user, transactions, loading, onUpdate, onAddClick, onEditCl
             onClick={onAddClick}
             className="hidden md:inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-900 hover:bg-slate-800 dark:bg-slate-100 dark:hover:bg-white text-white dark:text-slate-900 px-4 py-3 text-sm font-bold shadow-none transition duration-150 outline-none active:scale-[0.98]"
           >
-            <SlPlus className="text-xs font-bold" />
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+            </svg>
             <span>Add Transaction</span>
           </button>
         </div>

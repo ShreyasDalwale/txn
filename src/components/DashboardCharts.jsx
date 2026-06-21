@@ -225,9 +225,8 @@ export const TrendChart = ({ transactions }) => {
               <stop offset="0%" stopColor="#f43f5e" stopOpacity="0.15" />
               <stop offset="100%" stopColor="#f43f5e" stopOpacity="0.0" />
             </linearGradient>
-            {/* Glow Filter */}
             <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-              <feDropShadow dx="0" dy="2" stdDeviation="3" floodColor="#11998e" floodOpacity="0.3" />
+              <feDropShadow dx="0" dy="2" stdDeviation="3" floodColor="var(--chart-glow)" floodOpacity="0.25" />
             </filter>
             <filter id="glow-red" x="-20%" y="-20%" width="140%" height="140%">
               <feDropShadow dx="0" dy="2" stdDeviation="3" floodColor="#f43f5e" floodOpacity="0.2" />
@@ -431,7 +430,7 @@ export const CategoryBreakdownDonut = ({ userId, transactions }) => {
         return {
           name: labelText,
           icon: emojiMatch ? emojiMatch[0] : '📦',
-          color: staticCat.value === 'other' ? '#9b9b9b' : '#11998e',
+          color: staticCat.value === 'other' ? '#9b9b9b' : '#64748b',
         };
       }
 

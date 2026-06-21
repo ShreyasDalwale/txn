@@ -10,7 +10,7 @@ const BottomNav = () => {
         to="/"
         className={({ isActive }) =>
           `flex flex-col items-center justify-center flex-1 py-1 text-[10px] font-bold tracking-wide transition-colors ${
-            isActive ? 'text-brand-teal' : 'text-slate-400 dark:text-slate-500'
+            isActive ? 'text-slate-900 dark:text-white' : 'text-slate-400 dark:text-slate-500'
           }`
         }
       >
@@ -23,7 +23,7 @@ const BottomNav = () => {
         to="/transactions"
         className={({ isActive }) =>
           `flex flex-col items-center justify-center flex-1 py-1 text-[10px] font-bold tracking-wide transition-colors ${
-            isActive ? 'text-brand-teal' : 'text-slate-400 dark:text-slate-500'
+            isActive ? 'text-slate-900 dark:text-white' : 'text-slate-400 dark:text-slate-500'
           }`
         }
       >
@@ -36,7 +36,7 @@ const BottomNav = () => {
         to="/settings"
         className={({ isActive }) =>
           `flex flex-col items-center justify-center flex-1 py-1 text-[10px] font-bold tracking-wide transition-colors ${
-            isActive ? 'text-brand-teal' : 'text-slate-400 dark:text-slate-500'
+            isActive ? 'text-slate-900 dark:text-white' : 'text-slate-400 dark:text-slate-500'
           }`
         }
       >
